@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Portfolio Tracker — Coin & Stock</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #8b5cf6; --primary-dark: #7c3aed; --bg: #0f172a; --card: #1e293b;
+      --text: #f1f5f9; --muted: #94a3b8; --border: #334155;
+      --profit: #10b981; --loss: #ef4444; --crypto: #f7931a; --stock: #3b82f6;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    .app-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 200px; background: #0f172a; border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; overflow-y: auto; }
+    .sidebar-brand { padding: 20px 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-brand h4 { font-weight: 800; font-size: 0.95rem; }
+    .sidebar .nav-link { color: var(--muted); padding: 10px 16px; font-size: 0.85rem; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: all 0.2s; }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { color: white; background: rgba(139,92,246,0.15); }
+    .main-content { margin-left: 200px; flex: 1; padding: 20px; }
+
+    .kpi-card { background: var(--card); border-radius: 14px; padding: 18px; border: 1px solid var(--border); }
+    .kpi-value { font-size: 1.5rem; font-weight: 800; }
+    .kpi-label { font-size: 0.78rem; color: var(--muted); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+    .card-header { background: var(--card); font-weight: 700; border-radius: 14px 14px 0 0 !important; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+
+    .holding-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; transition: all 0.2s; cursor: pointer; }
+    .holding-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .asset-symbol { font-weight: 800; font-size: 1.1rem; }
+    .asset-name { font-size: 0.78rem; color: var(--muted); }
+    .asset-type-badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 12px; font-weight: 700; text-transform: uppercase; }
+    .type-crypto { background: rgba(247,147,26,0.15); color: var(--crypto); }
+    .type-stock { background: rgba(59,130,246,0.15); color: var(--stock); }
+    .pnl-positive { color: var(--profit); }
+    .pnl-negative { color: var(--loss); }
+
+    .form-control, .form-select { border-radius: 8px; padding: 10px 14px; background: #0f172a; border: 1px solid var(--border); color: var(--text); }
+    .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139,92,246,0.15); color: var(--text); }
+    .btn { border-radius: 8px; font-weight: 600; }
+    .btn-primary { background: var(--primary); border-color: var(--primary); }
+    .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 16px; }
+    .modal-header { border-bottom: 1px solid var(--border); }
+    .modal-footer { border-top: 1px solid var(--border); }
+    .text-muted { color: var(--muted) !important; }
+    .table { color: var(--text); }
+    .table th { color: var(--muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; border-color: var(--border); }
+    .table td { border-color: var(--border); vertical-align: middle; }
+
+    .floating-btn { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--primary); color: white; border: none; font-size: 1.5rem; box-shadow: 0 4px 20px rgba(139,92,246,0.4); cursor: pointer; z-index: 200; transition: transform 0.2s; }
+    .floating-btn:hover { transform: scale(1.1); }
+    .floating-btn.buy-btn { background: var(--profit); bottom: 92px; box-shadow: 0 4px 20px rgba(16,185,129,0.4); }
+
+    .allocation-bar { height: 8px; border-radius: 4px; display: flex; overflow: hidden; }
+    .allocation-segment { height: 100%; transition: width 0.5s; }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; padding: 16px; padding-bottom: 80px; }
+      .kpi-value { font-size: 1.2rem; }
+      .floating-btn { bottom: 80px; right: 16px; width: 48px; height: 48px; font-size: 1.2rem; }
+      .floating-btn.buy-btn { bottom: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <h4>📊 Portfolio</h4>
+      <small style="color:var(--muted);font-size:0.7rem;">Crypto & Stock Tracker</small>
+    </div>
+    <a class="nav-link active" href="#" onclick="navigate('overview')" data-page="overview"><i class="fas fa-chart-pie"></i>Tổng quan</a>
+    <a class="nav-link" href="#" onclick="navigate('holdings')" data-page="holdings"><i class="fas fa-coins"></i>Danh mục</a>
+    <a class="nav-link" href="#" onclick="navigate('transactions')" data-page="transactions"><i class="fas fa-list"></i>Giao dịch</a>
+    <a class="nav-link" href="#" onclick="navigate('assets')" data-page="assets"><i class="fas fa-database"></i>Tài sản</a>
+    <div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px;">
+      <a class="nav-link" href="#" onclick="switchToFinance()"><i class="fas fa-wallet"></i>← Tài chính</a>
+    </div>
+    <div style="position:absolute;bottom:60px;left:12px;right:12px;">
+      <button class="btn btn-sm btn-outline-secondary w-100" onclick="setupDemo()" style="border-color:var(--border);color:var(--muted);"><i class="fas fa-wand-magic-sparkles me-1"></i>Dữ liệu mẫu</button>
+    </div>
+  </div>
+
+  <div class="main-content" id="mainContent"></div>
+</div>
+
+<button class="floating-btn buy-btn" onclick="showAddTx('buy')" title="Thêm lệnh MUA"><i class="fas fa-arrow-down"></i></button>
+<button class="floating-btn" onclick="showAddTx('sell')" title="Thêm lệnh BÁN"><i class="fas fa-arrow-up"></i></button>
+<div id="modalContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+var APP = { page: 'overview', chart: null, portfolio: null, assets: [] };
+
+function callGs(func) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  return new Promise(function(resolve, reject) {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[func].apply(null, args);
+    } else { console.warn('Offline'); resolve(null); }
+  });
+}
+
+function fmt(n) {
+  if (n == null || isNaN(n)) return '0đ';
+  n = Number(n);
+  if (Math.abs(n) >= 1000000000) return (n/1000000000).toFixed(2) + 'B';
+  if (Math.abs(n) >= 1000000) return (n/1000000).toFixed(1) + 'tr';
+  if (Math.abs(n) >= 1000) return (n/1000).toFixed(1) + 'k';
+  return n.toFixed(0);
+}
+
+function fmtFull(n) { if (n == null || isNaN(n)) return '0đ'; return Number(n).toLocaleString('vi-VN') + 'đ'; }
+function fmtDate(d) { if (!d) return ''; try { return new Date(d).toLocaleDateString('vi-VN'); } catch(e) { return d; } }
+function fmtPnl(n) { return (n >= 0 ? '+' : '') + fmt(n) + 'đ'; }
+function pnlClass(n) { return n >= 0 ? 'pnl-positive' : 'pnl-negative'; }
+
+// === NAVIGATION ===
+async function navigate(page) {
+  APP.page = page;
+  document.querySelectorAll('.sidebar .nav-link').forEach(function(l) { l.classList.remove('active'); });
+  var link = document.querySelector('.sidebar .nav-link[data-page="' + page + '"]');
+  if (link) link.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+
+  if (page === 'overview') await renderOverview();
+  else if (page === 'holdings') await renderHoldings();
+  else if (page === 'transactions') await renderTransactions();
+  else if (page === 'assets') await renderAssets();
+}
+
+function switchToFinance() {
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    window.open(window.location.href.replace(/page=portfolio/, 'page=finance'), '_self');
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+// === TỔNG QUAN ===
+async function renderOverview() {
+  APP.portfolio = await callGs('getPortfolioOverview');
+  var d = APP.portfolio;
+  if (!d) { document.getElementById('mainContent').innerHTML = '<p class="text-center text-muted py-5">Đang tải...</p>'; return; }
+
+  var totalPnl = d.totalUnrealizedPnl || 0;
+  var totalPnlPct = d.totalUnrealizedPnlPercent || 0;
+
+  var html = '<div class="d-flex justify-content-between align-items-center mb-3"><h2 style="font-weight:800;">Tổng quan Portfolio</h2><div><button class="btn btn-sm btn-outline-secondary me-2" onclick="renderOverview()"><i class="fas fa-sync-alt me-1"></i>Làm mới</button><button class="btn btn-sm btn-primary" onclick="showUpdatePrices()"><i class="fas fa-edit me-1"></i>Cập nhật giá</button></div></div>';
+
+  // KPI cards
+  html += '<div class="row g-3 mb-4">' +
+    kpiCard('Tổng giá trị', fmtFull(d.totalCurrentValue), '', '#8b5cf6', 'fa-chart-line') +
+    kpiCard('Tổng đầu tư', fmtFull(d.totalInvested), '', '#64748b', 'fa-wallet') +
+    kpiCard('Lãi/Lỗ chưa thực hiện', fmtPnl(totalPnl), totalPnlPct.toFixed(1) + '%', totalPnl >= 0 ? '#10b981' : '#ef4444', totalPnl >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down') +
+    kpiCard('Lãi/Lỗ đã thực hiện', fmtPnl(d.totalRealizedPnl), d.holdingCount + ' vị thế', d.totalRealizedPnl >= 0 ? '#3b82f6' : '#ef4444', 'fa-check-circle') +
+    '</div>';
+
+  // Biểu đồ phân bổ
+  html += '<div class="row g-3 mb-4"><div class="col-md-7"><div class="card"><div class="card-header">Phân bổ danh mục</div><div class="card-body"><canvas id="allocationChart" height="260"></canvas></div></div></div>';
+
+  // Top holdings
+  html += '<div class="col-md-5"><div class="card h-100"><div class="card-header">Vị thế lớn nhất</div><div class="card-body">';
+  var topHoldings = (d.holdings || []).slice(0, 8);
+  if (topHoldings.length === 0) {
+    html += '<p class="text-muted text-center py-4">Chưa có vị thế nào</p>';
+  } else {
+    var maxVal = topHoldings[0].currentValue;
+    topHoldings.forEach(function(h) {
+      var pct = maxVal > 0 ? (h.currentValue / maxVal * 100) : 0;
+      var typeCls = h.type === 'crypto' ? 'type-crypto' : 'type-stock';
+      html += '<div class="mb-3"><div class="d-flex justify-content-between mb-1"><span><span class="asset-type-badge ' + typeCls + ' me-1">' + h.type + '</span><strong>' + h.symbol + '</strong></span><span>' + fmtFull(h.currentValue) + '</span></div><div style="height:6px;background:#334155;border-radius:3px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:' + (h.type === 'crypto' ? '#f7931a' : '#3b82f6') + ';border-radius:3px;"></div></div><div class="d-flex justify-content-between mt-1"><span class="' + pnlClass(h.unrealizedPnl) + '" style="font-size:0.8rem;">' + fmtPnl(h.unrealizedPnl) + '</span><span class="' + pnlClass(h.unrealizedPnl) + '" style="font-size:0.8rem;">' + (h.unrealizedPnlPercent >= 0 ? '+' : '') + h.unrealizedPnlPercent.toFixed(1) + '%</span></div></div>';
+    });
+  }
+  html += '</div></div></div></div>';
+
+  // Allocation bar
+  if (d.allocationByType) {
+    var types = Object.keys(d.allocationByType);
+    var totalAlloc = d.totalCurrentValue || 1;
+    html += '<div class="card mb-4"><div class="card-header">Phân bổ theo loại tài sản</div><div class="card-body"><div class="allocation-bar mb-3">';
+    var colors = { crypto: '#f7931a', stock: '#3b82f6', etf: '#06b6d4', fund: '#8b5cf6' };
+    types.forEach(function(t) {
+      var pct = (d.allocationByType[t] / totalAlloc * 100).toFixed(1);
+      html += '<div class="allocation-segment" style="width:' + pct + '%;background:' + (colors[t] || '#64748b') + ';" title="' + t.toUpperCase() + ': ' + pct + '%"></div>';
+    });
+    html += '</div><div class="d-flex gap-4">';
+    types.forEach(function(t) {
+      html += '<div><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' + (colors[t] || '#64748b') + ';margin-right:6px;"></span>' + t.toUpperCase() + ': <strong>' + fmtFull(d.allocationByType[t]) + '</strong></div>';
+    });
+    html += '</div></div></div>';
+  }
+
+  document.getElementById('mainContent').innerHTML = html;
+
+  // Vẽ chart
+  setTimeout(function() {
+    var ctx = document.getElementById('allocationChart');
+    if (!ctx || !d.allocationByAsset || d.allocationByAsset.length === 0) return;
+    if (APP.chart) APP.chart.destroy();
+    var assetColors = { crypto: '#f7931a', stock: '#3b82f6' };
+    APP.chart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: d.allocationByAsset.map(function(a) { return a.symbol; }),
+        datasets: [{
+          data: d.allocationByAsset.map(function(a) { return a.value; }),
+          backgroundColor: ['#f7931a','#3b82f6','#06b6d4','#8b5cf6','#ec4899','#10b981','#f59e0b','#ef4444','#6366f1','#14b8a6'],
+          borderColor: 'transparent',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 16, usePointStyle: true, pointStyleWidth: 10, font: { size: 11 } } },
+          tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + fmtFull(ctx.raw); } } }
+        }
+      }
+    });
+  }, 200);
+}
+
+function kpiCard(label, value, subtitle, color, icon) {
+  return '<div class="col-6 col-md-3"><div class="kpi-card"><div style="color:' + color + ';font-size:1.2rem;margin-bottom:6px;"><i class="fas ' + icon + '"></i></div><div class="kpi-value" style="color:' + color + ';">' + value + '</div><div class="kpi-label">' + label + (subtitle ? ' <span style="color:' + color + ';">' + subtitle + '</span>' : '') + '</div></div></div>';
+}
+
+// === DANH MỤC HOLDINGS ===
+async function renderHoldings() {
+  APP.portfolio = await callGs('getPortfolioOverview');
+  var holdings = APP.portfolio ? APP.portfolio.holdings || [] : [];
+  var html = '<div class="d-flex justify-content-between align-items-center mb-3"><h2 style="font-weight:800;">Danh mục (' + holdings.length + ')</h2><button class="btn btn-primary btn-sm" onclick="showAddTx(\'buy\')"><i class="fas fa-plus me-1"></i>Giao dịch mới</button></div>';
+
+  if (holdings.length === 0) {
+    html += '<div style="text-align:center;padding:80px;color:var(--muted);"><i class="fas fa-coins" style="font-size:4rem;opacity:0.1;display:block;margin-bottom:16px;"></i><p>Danh mục trống</p><p style="font-size:0.85rem;">Thêm giao dịch MUA đầu tiên để bắt đầu</p></div>';
+  } else {
+    html += '<div class="row g-3">';
+    holdings.forEach(function(h) {
+      var isProfit = h.unrealizedPnl >= 0;
+      var typeCls = h.type === 'crypto' ? 'type-crypto' : 'type-stock';
+      html += '<div class="col-md-6 col-lg-4"><div class="holding-card" onclick="viewHoldingDetail(\'' + h.assetId + '\', \'' + h.symbol + '\')"><div class="d-flex justify-content-between mb-2"><div><span class="asset-type-badge ' + typeCls + ' me-2">' + h.type.toUpperCase() + '</span><span class="asset-symbol">' + h.symbol + '</span></div><span style="font-size:1.1rem;font-weight:800;">' + fmtFull(h.currentValue) + '</span></div><div class="asset-name mb-3">' + h.name + '</div><div class="row"><div class="col-6"><div style="font-size:0.7rem;color:var(--muted);">Số lượng</div><div style="font-weight:700;">' + Number(h.quantity).toFixed(h.type === 'crypto' ? 4 : 2) + '</div></div><div class="col-6"><div style="font-size:0.7rem;color:var(--muted);">Giá vốn TB</div><div style="font-weight:700;">' + fmtFull(h.avgCost) + '</div></div></div><div class="row mt-2"><div class="col-6"><div style="font-size:0.7rem;color:var(--muted);">Giá hiện tại</div><div style="font-weight:700;">' + fmtFull(h.currentPrice) + '</div></div><div class="col-6"><div style="font-size:0.7rem;color:var(--muted);">P&L</div><div class="' + pnlClass(h.unrealizedPnl) + '" style="font-weight:700;">' + fmtPnl(h.unrealizedPnl) + ' (' + (isProfit ? '+' : '') + h.unrealizedPnlPercent.toFixed(1) + '%)</div></div></div></div></div>';
+    });
+    html += '</div>';
+  }
+
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+async function viewHoldingDetail(assetId, symbol) {
+  APP.assets = await callGs('getAssets') || [];
+  var asset = APP.assets.find(function(a) { return a.id === assetId; });
+  var txs = await callGs('getPortfolioTx', assetId) || [];
+
+  var html = '<div class="modal fade show d-block" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5>' + symbol + ' — Lịch sử giao dịch</h5><button class="btn-close btn-close-white" onclick="closeModal()"></button></div><div class="modal-body"><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Ngày</th><th>Loại</th><th>SL</th><th>Giá</th><th>Tổng</th><th>Phí</th><th>Ghi chú</th></tr></thead><tbody>';
+  if (txs.length === 0) {
+    html += '<tr><td colspan="7" class="text-center text-muted py-3">Chưa có giao dịch</td></tr>';
+  } else {
+    txs.forEach(function(tx) {
+      var typeLabel = tx.type === 'buy' ? 'MUA' : 'BÁN';
+      var typeColor = tx.type === 'buy' ? 'var(--profit)' : 'var(--loss)';
+      html += '<tr><td>' + fmtDate(tx.date) + '</td><td style="color:' + typeColor + ';font-weight:700;">' + typeLabel + '</td><td>' + Number(tx.quantity).toFixed(4) + '</td><td>' + fmtFull(tx.pricePerUnit) + '</td><td>' + fmtFull(tx.total) + '</td><td>' + fmt(tx.fees) + 'đ</td><td>' + (tx.notes || '-') + '</td></tr>';
+    });
+  }
+  html += '</tbody></table></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Đóng</button></div></div></div></div><div class="modal-backdrop fade show"></div>';
+  var div = document.createElement('div');
+  div.id = 'modalContainer';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+}
+
+// === LỊCH SỬ GIAO DỊCH ===
+async function renderTransactions() {
+  APP.assets = await callGs('getAssets') || [];
+  var txs = await callGs('getPortfolioTx') || [];
+  var html = '<div class="d-flex justify-content-between align-items-center mb-3"><h2 style="font-weight:800;">Lịch sử giao dịch</h2><button class="btn btn-primary btn-sm" onclick="showAddTx(\'buy\')"><i class="fas fa-plus me-1"></i>Thêm</button></div>';
+
+  if (txs.length === 0) {
+    html += '<div style="text-align:center;padding:80px;color:var(--muted);"><i class="fas fa-list" style="font-size:4rem;opacity:0.1;display:block;margin-bottom:16px;"></i><p>Chưa có giao dịch</p></div>';
+  } else {
+    html += '<div class="card"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Ngày</th><th>Tài sản</th><th>Loại</th><th>SL</th><th>Giá</th><th>Tổng</th><th>Phí</th><th></th></tr></thead><tbody>';
+    txs.forEach(function(tx) {
+      var asset = APP.assets.find(function(a) { return a.id === tx.assetId; }) || {};
+      var symbol = asset.symbol || '?';
+      var typeLabel = tx.type === 'buy' ? 'MUA' : 'BÁN';
+      var typeColor = tx.type === 'buy' ? 'var(--profit)' : 'var(--loss)';
+      html += '<tr><td>' + fmtDate(tx.date) + '</td><td><strong>' + symbol + '</strong></td><td style="color:' + typeColor + ';font-weight:700;">' + typeLabel + '</td><td>' + Number(tx.quantity).toFixed(4) + '</td><td>' + fmtFull(tx.pricePerUnit) + '</td><td>' + fmtFull(tx.total) + '</td><td>' + fmt(tx.fees) + 'đ</td><td><button class="btn btn-sm text-danger" onclick="deletePortfolioTx(\'' + tx.id + '\')"><i class="fas fa-trash"></i></button></td></tr>';
+    });
+    html += '</tbody></table></div></div>';
+  }
+
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+async function deletePortfolioTx(id) {
+  if (!confirm('Xóa giao dịch này?')) return;
+  await callGs('deletePortfolioTx', id);
+  renderTransactions();
+}
+
+// === QUẢN LÝ TÀI SẢN ===
+async function renderAssets() {
+  APP.assets = await callGs('getAssets') || [];
+  var html = '<div class="d-flex justify-content-between align-items-center mb-3"><h2 style="font-weight:800;">Tài sản theo dõi</h2><button class="btn btn-primary btn-sm" onclick="showAddAsset()"><i class="fas fa-plus me-1"></i>Thêm</button></div><div class="row g-3">';
+
+  APP.assets.forEach(function(a) {
+    html += '<div class="col-md-3 col-6"><div class="card"><div class="card-body text-center"><div style="font-size:2rem;margin-bottom:4px;">' + (a.type === 'crypto' ? '🪙' : '📊') + '</div><div class="asset-symbol">' + a.symbol + '</div><div class="asset-name mb-2">' + a.name + '</div><span class="asset-type-badge ' + (a.type === 'crypto' ? 'type-crypto' : 'type-stock') + '">' + a.type + '</span><div style="margin-top:8px;font-size:0.8rem;color:var(--muted);">' + (a.exchange || '') + '</div><div style="margin-top:4px;font-weight:700;">' + (a.currentPrice > 0 ? fmtFull(a.currentPrice) : 'Chưa có giá') + '</div><button class="btn btn-sm btn-outline-secondary mt-2 w-100" onclick="editAssetPrice(\'' + a.id + '\', \'' + a.symbol + '\', ' + a.currentPrice + ')" style="border-color:var(--border);color:var(--muted);">Cập nhật giá</button></div></div></div>';
+  });
+
+  html += '</div>';
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function showAddAsset() {
+  var html = '<div class="modal fade show d-block" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5>Thêm tài sản</h5><button class="btn-close btn-close-white" onclick="closeModal()"></button></div><div class="modal-body">' +
+    '<div class="mb-3"><label class="form-label">Mã (Symbol)</label><input class="form-control" id="assetSymbol" placeholder="VD: BTC, VNM, AAPL" style="text-transform:uppercase;"></div>' +
+    '<div class="mb-3"><label class="form-label">Tên</label><input class="form-control" id="assetName" placeholder="VD: Bitcoin, Vinamilk"></div>' +
+    '<div class="mb-3"><label class="form-label">Loại</label><select class="form-select" id="assetType"><option value="crypto">Crypto</option><option value="stock">Stock</option></select></div>' +
+    '<div class="mb-3"><label class="form-label">Sàn giao dịch</label><input class="form-control" id="assetExchange" placeholder="VD: Binance, HOSE, NASDAQ"></div>' +
+    '</div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveAsset()">Lưu</button></div></div></div></div><div class="modal-backdrop fade show"></div>';
+  var div = document.createElement('div');
+  div.id = 'modalContainer';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+}
+
+async function saveAsset() {
+  var asset = {
+    symbol: document.getElementById('assetSymbol').value,
+    name: document.getElementById('assetName').value,
+    type: document.getElementById('assetType').value,
+    exchange: document.getElementById('assetExchange').value
+  };
+  if (!asset.symbol || !asset.name) { alert('Vui lòng nhập đầy đủ'); return; }
+  await callGs('addAsset', asset);
+  closeModal();
+  renderAssets();
+}
+
+function editAssetPrice(id, symbol, currentPrice) {
+  var html = '<div class="modal fade show d-block" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5>Cập nhật giá ' + symbol + '</h5><button class="btn-close btn-close-white" onclick="closeModal()"></button></div><div class="modal-body">' +
+    '<div class="mb-3"><label class="form-label">Giá hiện tại</label><input class="form-control form-control-lg" type="number" id="newPrice" value="' + currentPrice + '" style="font-size:1.3rem;font-weight:700;"></div>' +
+    '<input type="hidden" id="editAssetId" value="' + id + '">' +
+    '</div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="updatePrice()">Cập nhật</button></div></div></div></div><div class="modal-backdrop fade show"></div>';
+  var div = document.createElement('div');
+  div.id = 'modalContainer';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+}
+
+async function updatePrice() {
+  var id = document.getElementById('editAssetId').value;
+  var price = parseInt(document.getElementById('newPrice').value) || 0;
+  await callGs('updateAssetPrice', id, price);
+  closeModal();
+  renderAssets();
+}
+
+function showUpdatePrices() {
+  APP.assets = APP.assets || [];
+  var html = '<div class="modal fade show d-block" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5>Cập nhật giá hàng loạt</h5><button class="btn-close btn-close-white" onclick="closeModal()"></button></div><div class="modal-body">';
+  APP.assets.forEach(function(a) {
+    html += '<div class="mb-2"><label class="form-label fw-bold">' + a.symbol + ' (' + a.name + ')</label><input class="form-control" id="price_' + a.symbol + '" value="' + a.currentPrice + '" placeholder="Giá hiện tại"></div>';
+  });
+  html += '</div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveAllPrices()">Lưu tất cả</button></div></div></div></div><div class="modal-backdrop fade show"></div>';
+  var div = document.createElement('div');
+  div.id = 'modalContainer';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+}
+
+async function saveAllPrices() {
+  APP.assets = APP.assets || [];
+  var prices = {};
+  APP.assets.forEach(function(a) {
+    var el = document.getElementById('price_' + a.symbol);
+    if (el) prices[a.symbol] = parseInt(el.value) || 0;
+  });
+  await callGs('updateAllPrices', prices);
+  closeModal();
+  renderOverview();
+}
+
+// === FORM GIAO DỊCH ===
+async function showAddTx(type) {
+  APP.assets = await callGs('getAssets') || [];
+  var title = type === 'buy' ? 'Thêm lệnh MUA' : 'Thêm lệnh BÁN';
+  var icon = type === 'buy' ? '🟢' : '🔴';
+  var assetOptions = APP.assets.map(function(a) { return '<option value="' + a.id + '">' + a.symbol + ' - ' + a.name + ' (' + a.type.toUpperCase() + ')</option>'; }).join('');
+
+  var html = '<div class="modal fade show d-block" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5>' + icon + ' ' + title + '</h5><button class="btn-close btn-close-white" onclick="closeModal()"></button></div><div class="modal-body">' +
+    '<div class="mb-3"><label class="form-label">Tài sản</label><select class="form-select" id="ptxAsset" onchange="autoFillPrice()">' + assetOptions + '</select></div>' +
+    '<div class="row mb-3"><div class="col-6"><label class="form-label">Số lượng</label><input class="form-control" type="number" id="ptxQty" step="any" placeholder="0" oninput="calcTotal()"></div><div class="col-6"><label class="form-label">Giá / đơn vị</label><input class="form-control" type="number" id="ptxPrice" placeholder="0" oninput="calcTotal()"></div></div>' +
+    '<div class="mb-3"><label class="form-label">Tổng giá trị</label><input class="form-control" id="ptxTotal" readonly style="font-weight:700;"></div>' +
+    '<div class="mb-3"><label class="form-label">Phí giao dịch</label><input class="form-control" type="number" id="ptxFees" value="0" placeholder="0"></div>' +
+    '<div class="mb-3"><label class="form-label">Ngày</label><input class="form-control" type="date" id="ptxDate" value="' + new Date().toISOString().substring(0,10) + '"></div>' +
+    '<div class="mb-3"><label class="form-label">Ghi chú</label><input class="form-control" id="ptxNotes" placeholder="(tùy chọn)"></div>' +
+    '<input type="hidden" id="ptxType" value="' + type + '">' +
+    '</div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="savePortfolioTx()">Lưu</button></div></div></div></div><div class="modal-backdrop fade show"></div>';
+  var div = document.createElement('div');
+  div.id = 'modalContainer';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+}
+
+function calcTotal() {
+  var qty = parseFloat(document.getElementById('ptxQty').value) || 0;
+  var price = parseFloat(document.getElementById('ptxPrice').value) || 0;
+  document.getElementById('ptxTotal').value = fmtFull(qty * price);
+}
+
+function autoFillPrice() {
+  var assetId = document.getElementById('ptxAsset').value;
+  var asset = (APP.assets || []).find(function(a) { return a.id === assetId; });
+  if (asset && asset.currentPrice > 0) {
+    document.getElementById('ptxPrice').value = asset.currentPrice;
+    calcTotal();
+  }
+}
+
+async function savePortfolioTx() {
+  var tx = {
+    assetId: document.getElementById('ptxAsset').value,
+    type: document.getElementById('ptxType').value,
+    quantity: parseFloat(document.getElementById('ptxQty').value) || 0,
+    pricePerUnit: parseFloat(document.getElementById('ptxPrice').value) || 0,
+    fees: parseFloat(document.getElementById('ptxFees').value) || 0,
+    date: document.getElementById('ptxDate').value,
+    notes: document.getElementById('ptxNotes').value
+  };
+  if (tx.quantity <= 0 || tx.pricePerUnit <= 0) { alert('Vui lòng nhập số lượng và giá'); return; }
+  await callGs('addPortfolioTx', tx);
+  closeModal();
+  if (APP.page === 'overview') await renderOverview();
+  else if (APP.page === 'holdings') await renderHoldings();
+  else if (APP.page === 'transactions') await renderTransactions();
+}
+
+// === UTILS ===
+function closeModal() { var el = document.getElementById('modalContainer'); if (el) el.innerHTML = ''; }
+async function setupDemo() { var r = await callGs('setupPortfolioDemo'); if (r) alert(r.message); navigate('overview'); }
+
+// Khởi chạy
+navigate('overview');
+</script>
+</body>
+</html>

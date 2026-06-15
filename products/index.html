@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Systems Universe | POS Systems Showcase</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-error-container": "#93000a",
+            "surface-bright": "#f9f9f9",
+            "surface-tint": "#476083",
+            "on-error": "#ffffff",
+            "on-primary-fixed-variant": "#2f486a",
+            "on-secondary-fixed": "#001b3b",
+            "background": "#f9f9f9",
+            "on-tertiary": "#ffffff",
+            "surface": "#f9f9f9",
+            "on-surface-variant": "#43474e",
+            "tertiary": "#000512",
+            "primary-fixed": "#d4e3ff",
+            "error-container": "#ffdad6",
+            "on-surface": "#1a1c1c",
+            "secondary": "#005eb2",
+            "surface-container-lowest": "#ffffff",
+            "surface-variant": "#e2e2e2",
+            "on-primary": "#ffffff",
+            "secondary-container": "#4597fe",
+            "surface-container-high": "#e8e8e8",
+            "error": "#ba1a1a",
+            "on-primary-container": "#6f88ad",
+            "primary": "#000613",
+            "surface-container": "#eeeeee",
+            "outline-variant": "#c4c6cf",
+            "surface-container-highest": "#e2e2e2",
+            "surface-container-low": "#f3f3f3",
+            "on-background": "#1a1c1c",
+            "on-tertiary-fixed": "#001b3c",
+            "on-secondary-fixed-variant": "#004788",
+            "surface-dim": "#dadada",
+            "inverse-surface": "#2f3131",
+            "on-secondary": "#ffffff",
+            "secondary-fixed": "#d5e3ff",
+            "tertiary-fixed": "#d5e3ff",
+            "on-secondary-container": "#002e5d",
+            "primary-container": "#001f3f",
+            "outline": "#74777f",
+            "primary-fixed-dim": "#afc8f0",
+            "tertiary-container": "#001e41",
+            "inverse-primary": "#afc8f0",
+            "tertiary-fixed-dim": "#a7c8ff",
+            "on-tertiary-fixed-variant": "#1f477b",
+            "secondary-fixed-dim": "#a7c8ff",
+            "on-tertiary-container": "#6487bf",
+            "inverse-on-surface": "#f1f1f1",
+            "on-primary-fixed": "#001c3a"
+          },
+          fontFamily: {
+            headline: ["Inter"],
+            body: ["Inter"],
+            mono: ["JetBrains Mono"]
+          },
+          fontSize: {
+            "headline-md": ["20px", {lineHeight: "28px", fontWeight: "600"}],
+            "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}],
+            "display": ["48px", {lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700"}],
+            "label-md": ["14px", {lineHeight: "20px", letterSpacing: "0.02em", fontWeight: "500"}],
+            "body-lg": ["16px", {lineHeight: "24px", fontWeight: "400"}],
+            "code": ["13px", {lineHeight: "20px", fontWeight: "400"}],
+            "label-sm": ["12px", {lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "500"}],
+            "headline-lg-mobile": ["24px", {lineHeight: "32px", fontWeight: "600"}],
+            "body-sm": ["14px", {lineHeight: "20px", fontWeight: "400"}]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .blueprint-bg {
+      background-image: radial-gradient(circle, #d0d5dd 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .header-strip {
+      background-color: #001f3f;
+      color: #ffffff;
+    }
+    .border-technical {
+      border: 1px solid #d0d5dd;
+    }
+    .maturity-segment {
+      height: 4px;
+      width: 100%;
+      border-radius: 1px;
+    }
+    .node-line {
+      stroke: #d0d5dd;
+      stroke-width: 1;
+      stroke-dasharray: 4;
+    }
+
+    /* === HERO ANIMATIONS === */
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.08); }
+    }
+    @keyframes float-up-down {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes particle-drift {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      20% { opacity: 0.7; }
+      80% { opacity: 0.5; }
+      100% { transform: translateY(-60px) translateX(20px); opacity: 0; }
+    }
+    @keyframes dash-march {
+      to { stroke-dashoffset: -16; }
+    }
+    @keyframes cursor-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    @keyframes node-pulse {
+      0%, 100% { r: 28; }
+      50% { r: 31; }
+    }
+    @keyframes node-pulse-ring {
+      0%, 100% { stroke-width: 2; }
+      50% { stroke-width: 3.5; }
+    }
+    @keyframes slide-in-left {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slide-in-right {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      animation: glow-pulse 4s ease-in-out infinite;
+    }
+    .hero-glow-left {
+      background: radial-gradient(circle, rgba(0,94,178,0.25), transparent);
+      top: -60px; left: -80px;
+    }
+    .hero-glow-right {
+      background: radial-gradient(circle, rgba(71,96,131,0.2), transparent);
+      bottom: -80px; right: -60px;
+      animation-delay: 2s;
+    }
+
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px; height: 14px;
+      background: #4597fe;
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: cursor-blink 0.9s step-end infinite;
+    }
+
+    .diagram-node {
+      animation: float-up-down 5s ease-in-out infinite;
+      transform-origin: center;
+    }
+    .diagram-node:nth-child(odd) { animation-delay: 0.8s; animation-duration: 4.2s; }
+    .diagram-node:nth-child(even) { animation-delay: 2s; animation-duration: 5.5s; }
+
+    .particle {
+      position: absolute;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: #005eb2;
+      pointer-events: none;
+      animation: particle-drift 8s linear infinite;
+    }
+
+    .hero-section {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, rgba(0,31,63,0.03) 0%, rgba(0,94,178,0.04) 40%, rgba(71,96,131,0.02) 70%, transparent 100%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+
+<!-- ===== TOP NAVIGATION ===== -->
+<header class="bg-surface/80 backdrop-blur-md sticky top-0 z-50 border-b border-outline-variant flex justify-between items-center w-full px-4 md:px-12 py-4 max-w-full">
+  <div class="font-mono text-label-md tracking-tighter text-on-surface uppercase">Systems Universe</div>
+  <nav class="hidden md:flex gap-8 items-center">
+    <a class="text-secondary font-bold border-b-2 border-secondary font-mono text-label-sm uppercase" href="#hero">Overview</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-mono text-label-sm uppercase" href="#products">Products</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-mono text-label-sm uppercase" href="#pipeline">Build</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-mono text-label-sm uppercase" href="#stack">Stack</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-mono text-label-sm uppercase" href="#roadmap">Roadmap</a>
+    <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-mono text-label-sm uppercase" href="#about">About</a>
+  </nav>
+  <a href="#products" class="bg-primary text-on-primary px-4 py-2 font-mono text-label-sm uppercase hover:bg-secondary transition-all active:scale-95 rounded">
+    View Demos
+  </a>
+</header>
+
+<main class="blueprint-bg min-h-screen">
+
+  <!-- ===== HERO ===== -->
+  <section class="hero-section max-w-7xl mx-auto px-4 md:px-12 py-12 md:py-16 grid md:grid-cols-2 gap-8 md:gap-12 items-center" id="hero">
+
+    <!-- Ambient glow effects -->
+    <div class="hero-glow hero-glow-left"></div>
+    <div class="hero-glow hero-glow-right"></div>
+    <!-- Floating particles -->
+    <div class="particle" style="top:15%;left:10%;animation-delay:0s;"></div>
+    <div class="particle" style="top:25%;left:70%;animation-delay:2s;background:#476083;"></div>
+    <div class="particle" style="top:60%;left:50%;animation-delay:4s;width:2px;height:2px;"></div>
+    <div class="particle" style="top:70%;left:85%;animation-delay:5.5s;background:#4597fe;"></div>
+    <div class="particle" style="top:40%;left:30%;animation-delay:6.5s;"></div>
+    <div class="particle" style="top:80%;left:15%;animation-delay:1.5s;width:2px;height:2px;background:#476083;"></div>
+
+    <!-- Left: Text content -->
+    <div class="space-y-4 relative z-10" style="animation: slide-in-left 0.6s ease-out both;">
+      <div class="inline-flex flex-wrap items-center gap-2">
+        <span class="inline-block border-technical px-2 py-0.5 bg-surface-container-lowest font-mono text-[10px] text-secondary uppercase">
+          POS_ECOSYSTEM_V.1.0
+        </span>
+        <span class="inline-block bg-secondary-container text-on-secondary-container px-2 py-0.5 font-mono text-[10px] rounded uppercase">AI-Powered</span>
+      </div>
+      <h1 class="relative font-headline text-headline-lg text-primary uppercase !text-3xl md:!text-4xl">
+        Systems Universe
+        <span class="absolute -inset-x-4 -inset-y-2 bg-gradient-to-r from-secondary/10 via-transparent to-transparent rounded-lg -z-10"></span>
+      </h1>
+      <p class="font-mono text-[11px] leading-relaxed text-secondary-container bg-primary-container p-3 border-l-4 border-secondary relative">
+        <span class="text-secondary">//</span> BUILD PIPELINE: CLAUDE CODE + VS CODE + GAS<br/>
+        <span class="text-secondary">//</span> BACKEND: GOOGLE SHEETS — LIVE DATABASE<br/>
+        <span class="text-secondary">//</span> DEPLOY: Google Apps Script Web App — FREE HOSTING<br/>
+        <span class="text-secondary">//</span> STATUS: ALL SYSTEMS OPERATIONAL.<span class="terminal-cursor"></span>
+      </p>
+      <p class="font-body text-body-sm text-on-surface-variant max-w-xl">
+        A <strong>POS (Point of Sale)</strong> ecosystem built with
+        <strong>Claude Code AI</strong> — rapid development, zero cost, high performance.
+        <strong>Google Apps Script + Sheets</strong> architecture as live database backend,
+        deployed via free GAS Web App, optimized for SMBs worldwide.
+      </p>
+      <div class="flex gap-3">
+        <a href="#products" class="bg-primary text-on-primary px-5 py-2.5 font-mono text-label-sm uppercase hover:bg-secondary transition-all active:scale-95 rounded shadow-md hover:shadow-lg">View Products</a>
+        <a href="#about" class="border border-primary text-primary px-5 py-2.5 font-mono text-label-sm uppercase hover:bg-surface-container transition-all rounded">About</a>
+      </div>
+    </div>
+
+    <!-- Right: Animated Architecture Diagram -->
+    <div class="relative border-technical bg-surface-container-lowest shadow-md rounded-lg p-5 md:p-6 flex items-center justify-center overflow-hidden" style="animation: slide-in-right 0.6s ease-out both; min-height: 300px;">
+      <!-- Subtle grid overlay on diagram -->
+      <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle, #001f3f 1px, transparent 1px); background-size: 16px 16px;"></div>
+      <svg class="w-full h-full relative z-10" viewBox="0 0 400 400" style="max-height: 320px;">
+        <!-- Central Hub -->
+        <rect fill="#001f3f" height="52" rx="6" width="140" x="130" y="174" style="filter: drop-shadow(0 2px 12px rgba(0,31,63,0.3));">
+          <animate attributeName="opacity" values="0.9;1;0.9" dur="3s" repeatCount="indefinite"/>
+        </rect>
+        <text class="font-mono text-[9px] uppercase" fill="#ffffff" text-anchor="middle" x="200" y="200" font-weight="700">Systems Universe</text>
+
+        <!-- ===== TOP ROW: y = 100, perfectly aligned ===== -->
+
+        <!-- QR Order (top-left) -->
+        <line class="node-line" x1="145" x2="85" y1="190" y2="108" style="animation: dash-march 3s linear infinite; animation-delay: 1.6s;"></line>
+        <circle cx="85" cy="100" r="24" class="fill-surface-container-lowest" stroke="#005eb2" stroke-width="2.5" style="animation: node-pulse 3s ease-in-out infinite; animation-delay: 1.2s;"></circle>
+        <text class="font-mono text-[9px] font-bold" text-anchor="middle" x="85" y="104" fill="#005eb2">QR Order</text>
+
+        <!-- MiniPOS (top-center — LIVE) -->
+        <line class="node-line" x1="200" x2="200" y1="174" y2="108" style="animation: dash-march 3s linear infinite;"></line>
+        <circle cx="200" cy="100" r="24" class="fill-surface-container-lowest" stroke="#001f3f" stroke-width="2.5" style="animation: node-pulse 3s ease-in-out infinite,node-pulse-ring 3s ease-in-out infinite;"></circle>
+        <text class="font-mono text-[9px] font-bold" text-anchor="middle" x="200" y="104" fill="#001f3f">MiniPOS</text>
+        <circle cx="212" cy="92" r="4" fill="#10b981" style="animation: cursor-blink 1.4s step-end infinite;"></circle>
+
+        <!-- Coffee (top-right) -->
+        <line class="node-line" x1="255" x2="315" y1="190" y2="108" style="animation: dash-march 3s linear infinite; animation-delay: 0.8s;"></line>
+        <circle cx="315" cy="100" r="24" class="fill-surface-container-lowest" stroke="#005eb2" stroke-width="2.5" style="animation: node-pulse 3s ease-in-out infinite; animation-delay: 0.6s;"></circle>
+        <text class="font-mono text-[9px] font-bold" text-anchor="middle" x="315" y="104" fill="#005eb2">Coffee</text>
+
+        <!-- ===== BOTTOM ROW: y = 300, perfectly aligned ===== -->
+
+        <!-- Analytics (bottom-left) -->
+        <line class="node-line" x1="145" x2="85" y1="210" y2="292" style="animation: dash-march 3s linear infinite; animation-delay: 2s;"></line>
+        <circle cx="85" cy="300" r="24" class="fill-surface-container-lowest" stroke="#005eb2" stroke-width="2.5" style="animation: node-pulse 3s ease-in-out infinite; animation-delay: 3s;"></circle>
+        <text class="font-mono text-[9px] font-bold" text-anchor="middle" x="85" y="304" fill="#005eb2">Analytics</text>
+
+        <!-- Retail (bottom-center — planned) -->
+        <line class="node-line" x1="200" x2="200" y1="226" y2="292" stroke-dasharray="4" style="animation: dash-march 4s linear infinite; animation-delay: 1s;"></line>
+        <circle cx="200" cy="300" r="24" class="fill-surface-container-lowest" stroke="#74777f" stroke-width="1.5" stroke-dasharray="5" style="animation: node-pulse 4s ease-in-out infinite; animation-delay: 2.5s;"></circle>
+        <text class="font-mono text-[9px] font-bold" fill="#74777f" text-anchor="middle" x="200" y="304">Retail</text>
+
+        <!-- Restaurant (bottom-right — planned) -->
+        <line class="node-line" x1="255" x2="315" y1="210" y2="292" stroke-dasharray="4" style="animation: dash-march 4s linear infinite; animation-delay: 2.4s;"></line>
+        <circle cx="315" cy="300" r="24" class="fill-surface-container-lowest" stroke="#74777f" stroke-width="1.5" stroke-dasharray="5" style="animation: node-pulse 4s ease-in-out infinite; animation-delay: 1.8s;"></circle>
+        <text class="font-mono text-[9px] font-bold" fill="#74777f" text-anchor="middle" x="315" y="304">Restaurant</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ===== METRICS STRIP ===== -->
+  <section class="bg-surface-container-lowest border-y border-outline-variant py-12" id="metrics">
+    <div class="max-w-7xl mx-auto px-4 md:px-12 grid grid-cols-2 md:grid-cols-6 gap-4">
+      <div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+        <span class="font-mono text-label-sm text-on-surface-variant uppercase mb-1">Products</span>
+        <span class="font-headline text-headline-md text-secondary">04</span>
+      </div>
+      <div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+        <span class="font-mono text-label-sm text-on-surface-variant uppercase mb-1">Modules</span>
+        <span class="font-headline text-headline-md text-secondary">18</span>
+      </div>
+      <div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+        <span class="font-mono text-label-sm text-on-surface-variant uppercase mb-1">Live Demos</span>
+        <span class="font-headline text-headline-md text-secondary">01</span>
+      </div>
+      <div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+        <span class="font-mono text-label-sm text-on-surface-variant uppercase mb-1">AI Engine</span>
+        <span class="font-headline text-headline-md text-secondary">Claude</span>
+      </div>
+      <div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+        <span class="font-mono text-label-sm text-on-surface-variant uppercase mb-1">Hosting</span>
+        <span class="font-headline text-headline-md text-secondary">Free</span>
+      </div>
+      <div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+        <span class="font-mono text-label-sm text-on-surface-variant uppercase mb-1">Cost/Mo</span>
+        <span class="font-headline text-headline-md text-secondary">$0.00</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRODUCTS ===== -->
+  <section class="max-w-7xl mx-auto px-4 md:px-12 py-16" id="products">
+    <div class="flex items-center gap-4 mb-12">
+      <div class="h-12 w-1 bg-secondary"></div>
+      <div>
+        <h2 class="font-headline text-headline-lg text-primary uppercase">POS Product Suite</h2>
+        <p class="font-mono text-label-sm text-on-surface-variant">SCALABLE_POS_SYSTEMS</p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+
+      <!-- Card 1: MiniPOS — LIVE -->
+      <div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden flex flex-col">
+        <div class="header-strip px-4 py-2 flex justify-between items-center">
+          <span class="font-mono text-label-sm font-bold">MP_001</span>
+          <span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 font-mono text-[10px] rounded">LIVE</span>
+        </div>
+        <div class="h-40 bg-surface-container overflow-hidden flex items-center justify-center border-b border-technical"
+             style="background: linear-gradient(135deg, #001f3f 0%, #001f3f 60%, #005eb2 100%);">
+          <div class="text-center text-white">
+            <span class="material-symbols-outlined !text-[44px] mb-1 block">store</span>
+            <p class="font-mono text-[10px] uppercase opacity-70">POINT OF SALE</p>
+          </div>
+        </div>
+        <div class="p-6 flex flex-col flex-1">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="font-headline text-headline-md text-primary">MiniPOS</h3>
+              <span class="font-mono text-[10px] text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">v1.0</span>
+            </div>
+            <p class="text-body-sm text-on-surface-variant line-clamp-2">
+              Sales management system for small shops &amp; home businesses. KPI dashboard, product management, orders, customers, revenue reports.
+            </p>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="font-mono text-[9px] uppercase bg-primary-container/10 text-on-primary-container px-2 py-0.5 rounded border border-outline-variant">Sheets DB</span>
+              <span class="font-mono text-[9px] uppercase bg-primary-container/10 text-on-primary-container px-2 py-0.5 rounded border border-outline-variant">GAS Web App</span>
+              <span class="font-mono text-[9px] uppercase bg-primary-container/10 text-on-primary-container px-2 py-0.5 rounded border border-outline-variant">Sales</span>
+              <span class="font-mono text-[9px] uppercase bg-primary-container/10 text-on-primary-container px-2 py-0.5 rounded border border-outline-variant">Inventory</span>
+              <span class="font-mono text-[9px] uppercase bg-primary-container/10 text-on-primary-container px-2 py-0.5 rounded border border-outline-variant">Billing</span>
+            </div>
+          </div>
+          <div class="mt-auto">
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between font-mono text-[10px] uppercase text-on-surface-variant">
+                <span>Maturity</span><span>Segment 5/5</span>
+              </div>
+              <div class="flex gap-1">
+                <div class="maturity-segment bg-secondary"></div>
+                <div class="maturity-segment bg-secondary"></div>
+                <div class="maturity-segment bg-secondary"></div>
+                <div class="maturity-segment bg-secondary"></div>
+                <div class="maturity-segment bg-secondary"></div>
+              </div>
+            </div>
+            <a href="../production/index.html" target="_blank"
+               class="w-full border border-primary py-2 font-mono text-label-sm uppercase text-center block
+                      group-hover:bg-primary group-hover:text-on-primary transition-all rounded">
+              Launch Demo
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: CoffeePOS — RESEARCH -->
+      <div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden flex flex-col">
+        <div class="header-strip px-4 py-2 flex justify-between items-center">
+          <span class="font-mono text-label-sm font-bold">CF_002</span>
+          <span class="bg-surface-variant text-on-surface px-2 py-0.5 font-mono text-[10px] rounded">RESEARCH</span>
+        </div>
+        <div class="h-40 bg-surface-container overflow-hidden flex items-center justify-center border-b border-technical"
+             style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%);">
+          <div class="text-center text-white">
+            <span class="material-symbols-outlined !text-[44px] mb-1 block">coffee</span>
+            <p class="font-mono text-[10px] uppercase opacity-70">COFFEE SHOP POS</p>
+          </div>
+        </div>
+        <div class="p-6 flex flex-col flex-1">
+          <div class="space-y-3">
+            <h3 class="font-headline text-headline-md text-primary">CoffeePOS</h3>
+            <p class="text-body-sm text-on-surface-variant line-clamp-2">
+              Specialized POS for coffee shops &amp; beverage stores. Table-side ordering, topping customization, barista display screen, QR ordering.
+            </p>
+          </div>
+          <div class="mt-auto">
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between font-mono text-[10px] uppercase text-on-surface-variant">
+                <span>Maturity</span><span>Segment 1/5</span>
+              </div>
+              <div class="flex gap-1">
+                <div class="maturity-segment bg-secondary"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+              </div>
+            </div>
+            <button disabled class="w-full border border-outline text-on-surface-variant py-2 font-mono text-label-sm uppercase text-center bg-surface-container rounded cursor-not-allowed">Coming Soon</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: RestaurantPOS — PLANNING -->
+      <div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden flex flex-col">
+        <div class="header-strip px-4 py-2 flex justify-between items-center">
+          <span class="font-mono text-label-sm font-bold">RT_003</span>
+          <span class="bg-surface-variant text-on-surface px-2 py-0.5 font-mono text-[10px] rounded">PLANNING</span>
+        </div>
+        <div class="h-40 bg-surface-container overflow-hidden flex items-center justify-center border-b border-technical"
+             style="background: linear-gradient(135deg, #1e293b 0%, #334155 60%, #475569 100%);">
+          <div class="text-center text-white">
+            <span class="material-symbols-outlined !text-[44px] mb-1 block">restaurant</span>
+            <p class="font-mono text-[10px] uppercase opacity-70">FULL-SERVICE RESTAURANT</p>
+          </div>
+        </div>
+        <div class="p-6 flex flex-col flex-1">
+          <div class="space-y-3">
+            <h3 class="font-headline text-headline-md text-primary">RestaurantPOS</h3>
+            <p class="text-body-sm text-on-surface-variant line-clamp-2">
+              Full-service restaurant POS. Table management, reservations, time-based menus, bill splitting, kitchen integration &amp; multi-channel payments.
+            </p>
+          </div>
+          <div class="mt-auto">
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between font-mono text-[10px] uppercase text-on-surface-variant">
+                <span>Maturity</span><span>Segment 0/5</span>
+              </div>
+              <div class="flex gap-1">
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+              </div>
+            </div>
+            <button disabled class="w-full border border-outline text-on-surface-variant py-2 font-mono text-label-sm uppercase text-center bg-surface-container rounded cursor-not-allowed">Coming Soon</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: RetailPOS — IDEA -->
+      <div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden flex flex-col">
+        <div class="header-strip px-4 py-2 flex justify-between items-center">
+          <span class="font-mono text-label-sm font-bold">RL_004</span>
+          <span class="bg-surface-variant text-on-surface px-2 py-0.5 font-mono text-[10px] rounded">IDEA</span>
+        </div>
+        <div class="h-40 bg-surface-container overflow-hidden flex items-center justify-center border-b border-technical"
+             style="background: linear-gradient(135deg, #1e293b 0%, #475569 100%);">
+          <div class="text-center text-white">
+            <span class="material-symbols-outlined !text-[44px] mb-1 block">shopping_bag</span>
+            <p class="font-mono text-[10px] uppercase opacity-70">RETAIL CHAIN</p>
+          </div>
+        </div>
+        <div class="p-6 flex flex-col flex-1">
+          <div class="space-y-3">
+            <h3 class="font-headline text-headline-md text-primary">RetailPOS</h3>
+            <p class="text-body-sm text-on-surface-variant line-clamp-2">
+              Solution for retail chains. Multi-branch management, synced inventory, loyalty program, CRM integration &amp; centralized reporting.
+            </p>
+          </div>
+          <div class="mt-auto">
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between font-mono text-[10px] uppercase text-on-surface-variant">
+                <span>Maturity</span><span>Segment 0/5</span>
+              </div>
+              <div class="flex gap-1">
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+              </div>
+            </div>
+            <button disabled class="w-full border border-outline text-on-surface-variant py-2 font-mono text-label-sm uppercase text-center bg-surface-container rounded cursor-not-allowed">Coming Soon</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Data Lens — BUILDING -->
+      <div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden flex flex-col">
+        <div class="header-strip px-4 py-2 flex justify-between items-center">
+          <span class="font-mono text-label-sm font-bold">DL_005</span>
+          <span class="bg-surface-variant text-on-surface px-2 py-0.5 font-mono text-[10px] rounded">BUILDING</span>
+        </div>
+        <div class="h-40 bg-surface-container overflow-hidden flex items-center justify-center border-b border-technical"
+             style="background: linear-gradient(135deg, #001f3f 0%, #1e3a5f 100%);">
+          <div class="text-center text-white">
+            <span class="material-symbols-outlined !text-[44px] mb-1 block">monitoring</span>
+            <p class="font-mono text-[10px] uppercase opacity-70">ANALYTICS DASHBOARD</p>
+          </div>
+        </div>
+        <div class="p-6 flex flex-col flex-1">
+          <div class="space-y-3">
+            <h3 class="font-headline text-headline-md text-primary">Data Lens</h3>
+            <p class="text-body-sm text-on-surface-variant line-clamp-2">
+              Centralized analytics dashboard — aggregates data from all POS modules. Chart.js visualizations, report exports, real-time monitoring.
+            </p>
+          </div>
+          <div class="mt-auto">
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between font-mono text-[10px] uppercase text-on-surface-variant">
+                <span>Maturity</span><span>Segment 2/5</span>
+              </div>
+              <div class="flex gap-1">
+                <div class="maturity-segment bg-secondary"></div>
+                <div class="maturity-segment bg-secondary"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+              </div>
+            </div>
+            <button disabled class="w-full border border-outline text-on-surface-variant py-2 font-mono text-label-sm uppercase text-center bg-surface-container rounded cursor-not-allowed">In Development</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6: QR Order — RESEARCH -->
+      <div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden flex flex-col">
+        <div class="header-strip px-4 py-2 flex justify-between items-center">
+          <span class="font-mono text-label-sm font-bold">QR_006</span>
+          <span class="bg-surface-variant text-on-surface px-2 py-0.5 font-mono text-[10px] rounded">RESEARCH</span>
+        </div>
+        <div class="h-40 bg-surface-container overflow-hidden flex items-center justify-center border-b border-technical"
+             style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);">
+          <div class="text-center text-white">
+            <span class="material-symbols-outlined !text-[44px] mb-1 block">qr_code_scanner</span>
+            <p class="font-mono text-[10px] uppercase opacity-70">SELF-SERVICE ORDERING</p>
+          </div>
+        </div>
+        <div class="p-6 flex flex-col flex-1">
+          <div class="space-y-3">
+            <h3 class="font-headline text-headline-md text-primary">QR Order</h3>
+            <p class="text-body-sm text-on-surface-variant line-clamp-2">
+              Self-service QR ordering system. Customers scan QR at table → select items → orders go straight to kitchen. Integrated online payments.
+            </p>
+          </div>
+          <div class="mt-auto">
+            <div class="space-y-2 mb-4">
+              <div class="flex justify-between font-mono text-[10px] uppercase text-on-surface-variant">
+                <span>Maturity</span><span>Segment 1/5</span>
+              </div>
+              <div class="flex gap-1">
+                <div class="maturity-segment bg-secondary"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+                <div class="maturity-segment bg-surface-variant"></div>
+              </div>
+            </div>
+            <button disabled class="w-full border border-outline text-on-surface-variant py-2 font-mono text-label-sm uppercase text-center bg-surface-container rounded cursor-not-allowed">Coming Soon</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== HOW WE BUILD — AI PIPELINE ===== -->
+  <section class="max-w-7xl mx-auto px-4 md:px-12 py-16" id="pipeline">
+    <div class="flex items-center gap-4 mb-12">
+      <div class="h-12 w-1 bg-secondary"></div>
+      <div>
+        <h2 class="font-headline text-headline-lg text-primary uppercase">How We Build</h2>
+        <p class="font-mono text-label-sm text-on-surface-variant">AI_ASSISTED_DEVELOPMENT_PIPELINE</p>
+      </div>
+    </div>
+
+    <!-- Pipeline visualization -->
+    <div class="border-technical bg-surface-container-lowest rounded-xl p-8 md:p-10 overflow-hidden">
+      <div class="flex flex-wrap md:flex-nowrap items-center justify-center gap-4 md:gap-0">
+        <!-- Step 1: Claude Code -->
+        <div class="border-technical bg-surface p-5 rounded-lg text-center flex-shrink-0 w-40 md:w-44">
+          <span class="material-symbols-outlined text-[32px] text-secondary mb-2 block">smart_toy</span>
+          <h4 class="font-mono text-label-sm font-bold text-primary uppercase mb-1">Claude Code</h4>
+          <p class="text-[10px] text-on-surface-variant leading-snug">AI generates full-stack code from natural language</p>
+        </div>
+        <!-- Arrow -->
+        <div class="flex items-center justify-center w-10 h-10 flex-shrink-0 mx-0 md:mx-1">
+          <span class="material-symbols-outlined text-outline">arrow_forward</span>
+        </div>
+        <!-- Step 2: Google Apps Script -->
+        <div class="border-technical bg-surface p-5 rounded-lg text-center flex-shrink-0 w-40 md:w-44">
+          <span class="material-symbols-outlined text-[32px] text-secondary mb-2 block">cloud</span>
+          <h4 class="font-mono text-label-sm font-bold text-primary uppercase mb-1">Apps Script</h4>
+          <p class="text-[10px] text-on-surface-variant leading-snug">V8 engine executes business logic in Google Cloud</p>
+        </div>
+        <!-- Arrow -->
+        <div class="flex items-center justify-center w-10 h-10 flex-shrink-0 mx-0 md:mx-1">
+          <span class="material-symbols-outlined text-outline">arrow_forward</span>
+        </div>
+        <!-- Step 3: Google Sheets -->
+        <div class="border-technical bg-surface p-5 rounded-lg text-center flex-shrink-0 w-40 md:w-44">
+          <span class="material-symbols-outlined text-[32px] text-secondary mb-2 block">database</span>
+          <h4 class="font-mono text-label-sm font-bold text-primary uppercase mb-1">Sheets DB</h4>
+          <p class="text-[10px] text-on-surface-variant leading-snug">Live database — inventory, orders, customers, billing</p>
+        </div>
+        <!-- Arrow -->
+        <div class="flex items-center justify-center w-10 h-10 flex-shrink-0 mx-0 md:mx-1">
+          <span class="material-symbols-outlined text-outline">arrow_forward</span>
+        </div>
+        <!-- Step 4: Web App -->
+        <div class="border-technical bg-surface p-5 rounded-lg text-center flex-shrink-0 w-40 md:w-44">
+          <span class="material-symbols-outlined text-[32px] text-secondary mb-2 block">cloud_upload</span>
+          <h4 class="font-mono text-label-sm font-bold text-primary uppercase mb-1">Web App</h4>
+          <p class="text-[10px] text-on-surface-variant leading-snug">Deploy via GAS Web App — instant, zero-cost</p>
+        </div>
+      </div>
+
+      <!-- Pipeline flow line (desktop only) -->
+      <div class="hidden md:block mt-8 mx-8">
+        <div class="h-0.5 bg-gradient-to-r from-outline-variant via-secondary to-outline-variant opacity-25"></div>
+      </div>
+
+      <!-- Pipeline benefits -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+        <div class="text-center space-y-1">
+          <span class="font-mono text-headline-md text-secondary">~10x</span>
+          <p class="font-mono text-[10px] uppercase text-on-surface-variant">Faster Development</p>
+        </div>
+        <div class="text-center space-y-1">
+          <span class="font-mono text-headline-md text-secondary">$0</span>
+          <p class="font-mono text-[10px] uppercase text-on-surface-variant">Monthly Hosting</p>
+        </div>
+        <div class="text-center space-y-1">
+          <span class="font-mono text-headline-md text-secondary">99.9%</span>
+          <p class="font-mono text-[10px] uppercase text-on-surface-variant">Google Cloud SLA</p>
+        </div>
+        <div class="text-center space-y-1">
+          <span class="font-mono text-headline-md text-secondary">Instant</span>
+          <p class="font-mono text-[10px] uppercase text-on-surface-variant">Deploy &amp; Scale</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== INFRASTRUCTURE STACK ===== -->
+  <section class="max-w-7xl mx-auto px-4 md:px-12 py-16 bg-surface-container-lowest border-technical shadow-sm rounded-xl" id="stack">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div class="space-y-8">
+        <h2 class="font-headline text-headline-lg text-primary uppercase">Infrastructure Stack</h2>
+        <div class="flex flex-col gap-6">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-primary flex items-center justify-center text-on-primary font-bold font-mono">01</div>
+            <div>
+              <h4 class="font-mono text-label-md font-bold text-primary uppercase">Claude Code (AI)</h4>
+              <p class="text-body-sm text-on-surface-variant">AI agent in VS Code — generates full-stack code from natural language prompts.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 pl-8 border-l border-outline-variant">
+            <div class="w-12 h-12 bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold font-mono">02</div>
+            <div>
+              <h4 class="font-mono text-label-md font-bold text-primary uppercase">React + Tailwind CSS</h4>
+              <p class="text-body-sm text-on-surface-variant">Modern UI layer — React components, Tailwind design system, Chart.js.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 pl-16 border-l border-outline-variant">
+            <div class="w-12 h-12 bg-surface-container-high flex items-center justify-center text-primary font-bold font-mono">03</div>
+            <div>
+              <h4 class="font-mono text-label-md font-bold text-primary uppercase">Google Apps Script</h4>
+              <p class="text-body-sm text-on-surface-variant">Cloud execution engine for V8 JavaScript backend logic — free.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 pl-24 border-l border-outline-variant">
+            <div class="w-12 h-12 bg-surface-container-high flex items-center justify-center text-on-surface-variant font-bold font-mono">04</div>
+            <div>
+              <h4 class="font-mono text-label-md font-bold text-primary uppercase">Google Sheets DB</h4>
+              <p class="text-body-sm text-on-surface-variant">Live relational database — inventory, orders, customers, billing data.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="border-technical p-6 bg-surface space-y-2">
+          <span class="material-symbols-outlined text-secondary">smart_toy</span>
+          <h4 class="font-mono text-label-sm font-bold uppercase">AI Code Gen</h4>
+          <p class="text-[10px] text-on-surface-variant leading-tight">Claude Code generates full-stack features from natural language.</p>
+        </div>
+        <div class="border-technical p-6 bg-surface space-y-2">
+          <span class="material-symbols-outlined text-secondary">terminal</span>
+          <h4 class="font-mono text-label-sm font-bold uppercase">VS Code IDE</h4>
+          <p class="text-[10px] text-on-surface-variant leading-tight">AI-augmented development environment with Claude integration.</p>
+        </div>
+        <div class="border-technical p-6 bg-surface space-y-2">
+          <span class="material-symbols-outlined text-secondary">sync</span>
+          <h4 class="font-mono text-label-sm font-bold uppercase">Trigger System</h4>
+          <p class="text-[10px] text-on-surface-variant leading-tight">Time-driven &amp; event-driven automation via GAS triggers.</p>
+        </div>
+        <div class="border-technical p-6 bg-surface space-y-2">
+          <span class="material-symbols-outlined text-secondary">security</span>
+          <h4 class="font-mono text-label-sm font-bold uppercase">IAM Security</h4>
+          <p class="text-[10px] text-on-surface-variant leading-tight">Native Google Cloud permissions &amp; identity management.</p>
+        </div>
+        <div class="border-technical p-6 bg-surface space-y-2">
+          <span class="material-symbols-outlined text-secondary">bar_chart</span>
+          <h4 class="font-mono text-label-sm font-bold uppercase">Visual Intel</h4>
+          <p class="text-[10px] text-on-surface-variant leading-tight">Real-time Chart.js dashboards from Sheets data.</p>
+        </div>
+        <div class="border-technical p-6 bg-surface space-y-2">
+          <span class="material-symbols-outlined text-secondary">api</span>
+          <h4 class="font-mono text-label-sm font-bold uppercase">Extensibility</h4>
+          <p class="text-[10px] text-on-surface-variant leading-tight">Workspace APIs: Gmail, Drive, Calendar, Docs integration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ROADMAP ===== -->
+  <section class="max-w-7xl mx-auto px-4 md:px-12 py-16" id="roadmap">
+    <div class="flex items-center gap-4 mb-12">
+      <div class="h-12 w-1 bg-secondary"></div>
+      <div>
+        <h2 class="font-headline text-headline-lg text-primary uppercase">Development Roadmap</h2>
+        <p class="font-mono text-label-sm text-on-surface-variant">PHASED_DEPLOYMENT_SCHEDULE</p>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-4 gap-4">
+      <div class="border-technical bg-surface-container-lowest p-6 text-center space-y-4 relative">
+        <span class="material-symbols-outlined text-4xl text-secondary">looks_one</span>
+        <div>
+          <h4 class="font-headline font-bold text-primary uppercase text-lg mb-2">Phase 1</h4>
+          <p class="text-body-sm text-on-surface-variant">Complete MiniPOS — core POS platform with full basic sales functionality.</p>
+        </div>
+        <span class="inline-block bg-secondary-container text-on-secondary-container px-3 py-1 font-mono text-[10px] rounded uppercase">In Progress</span>
+      </div>
+      <div class="border-technical bg-surface-container-lowest p-6 text-center space-y-4 relative">
+        <span class="material-symbols-outlined text-4xl text-on-surface-variant">looks_two</span>
+        <div>
+          <h4 class="font-headline font-bold text-primary uppercase text-lg mb-2">Phase 2</h4>
+          <p class="text-body-sm text-on-surface-variant">CoffeePOS + QR Order — specialized F&B solutions with integrated mobile ordering.</p>
+        </div>
+        <span class="inline-block bg-surface-variant text-on-surface px-3 py-1 font-mono text-[10px] rounded uppercase">Up Next</span>
+      </div>
+      <div class="border-technical bg-surface-container-lowest p-6 text-center space-y-4 relative">
+        <span class="material-symbols-outlined text-4xl text-on-surface-variant">looks_3</span>
+        <div>
+          <h4 class="font-headline font-bold text-primary uppercase text-lg mb-2">Phase 3</h4>
+          <p class="text-body-sm text-on-surface-variant">RestaurantPOS — full-service restaurant system with table management &amp; reservations.</p>
+        </div>
+        <span class="inline-block bg-surface-variant text-on-surface px-3 py-1 font-mono text-[10px] rounded uppercase">Planning</span>
+      </div>
+      <div class="border-technical bg-surface-container-lowest p-6 text-center space-y-4 relative">
+        <span class="material-symbols-outlined text-4xl text-on-surface-variant">looks_4</span>
+        <div>
+          <h4 class="font-headline font-bold text-primary uppercase text-lg mb-2">Phase 4</h4>
+          <p class="text-body-sm text-on-surface-variant">RetailPOS + Data Lens — retail chains, centralized analytics, multi-branch operations.</p>
+        </div>
+        <span class="inline-block bg-surface-variant text-on-surface px-3 py-1 font-mono text-[10px] rounded uppercase">Vision</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="max-w-4xl mx-auto px-4 md:px-12 py-16 text-center" id="about">
+    <div class="inline-block mb-6 relative">
+      <div class="w-52 h-52 md:w-64 md:h-64 rounded-2xl overflow-hidden border-2 border-secondary shadow-lg">
+        <img src="images/ThanhNQ.jpg" alt="Ninh Quang Thanh" class="w-full h-full object-cover" />
+      </div>
+    </div>
+    <h2 class="font-headline text-headline-lg text-primary uppercase mb-3">Architectural Vision</h2>
+    <p class="font-body text-body-lg text-on-surface-variant mb-5 max-w-2xl mx-auto">
+      I'm <strong>Ninh Quang Thanh</strong> — Full-Stack Developer &amp; Product Builder.
+      I build business systems on the <strong>"Zero-Cost Infrastructure"</strong> stack:
+      combining <strong>Claude Code AI</strong> for rapid code generation, Google Apps Script as middleware,
+      Google Sheets as live database, and React/Tailwind CSS for the frontend.
+      The mission is to create powerful, easy-to-deploy POS solutions
+      with zero monthly operating costs for SMBs worldwide.
+    </p>
+    <p class="font-mono text-code text-secondary-container bg-primary-container p-4 border-l-4 border-secondary inline-block text-left mx-auto mb-8">
+      // MISSION: BUILD ENTERPRISE-GRADE POS SYSTEMS<br/>
+      // METHOD: CLAUDE CODE AI + VS CODE + GAS + SHEETS DB<br/>
+      // APPROACH: ZERO-COST ARCHITECTURE × MODERN UX × AI ACCELERATION<br/>
+      // STATUS: ACTIVELY DEVELOPING &amp; DEPLOYING.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="../production/index.html" target="_blank"
+         class="bg-primary text-on-primary px-8 py-3 font-mono text-label-sm uppercase flex items-center gap-2 hover:bg-secondary transition-all rounded">
+        <span class="material-symbols-outlined text-[18px]">play_arrow</span>Live Demo
+      </a>
+      <a href="https://www.linkedin.com/in/ninhquangthanh/" target="_blank" rel="noopener"
+         class="border border-primary text-primary px-8 py-3 font-mono text-label-sm uppercase flex items-center gap-2 hover:bg-surface-container transition-all rounded">
+        <span class="material-symbols-outlined text-[18px]">link</span>LinkedIn
+      </a>
+      <div class="relative inline-block">
+        <button onclick="toggleContactPopup()"
+           class="border border-outline text-on-surface-variant px-8 py-3 font-mono text-label-sm uppercase flex items-center gap-2 hover:bg-surface-container transition-all rounded">
+          <span class="material-symbols-outlined text-[18px]">mail</span>Email
+        </button>
+        <div id="contactPopup" class="hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-surface-container-lowest border-technical rounded-lg shadow-lg p-3 w-56 z-50">
+          <p class="font-mono text-label-sm text-primary font-bold mb-2">giaodich.3p@gmail.com</p>
+          <a href="mailto:giaodich.3p@gmail.com?subject=Hello%20from%20Systems%20Universe"
+             class="block w-full text-left px-3 py-2 font-mono text-[11px] text-on-surface hover:bg-surface-container rounded transition-colors">
+            <span class="material-symbols-outlined text-[14px] align-middle mr-1">mail</span> Open Mail App
+          </a>
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=giaodich.3p@gmail.com&su=Hello%20from%20Systems%20Universe" target="_blank"
+             class="block w-full text-left px-3 py-2 font-mono text-[11px] text-on-surface hover:bg-surface-container rounded transition-colors">
+            <span class="material-symbols-outlined text-[14px] align-middle mr-1">language</span> Open in Gmail
+          </a>
+          <button onclick="copyEmail()"
+             class="block w-full text-left px-3 py-2 font-mono text-[11px] text-on-surface hover:bg-surface-container rounded transition-colors">
+            <span class="material-symbols-outlined text-[14px] align-middle mr-1">content_copy</span> Copy Address
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-surface w-full px-4 md:px-12 py-6 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-dashed border-outline-variant">
+  <div class="font-mono text-label-md text-primary uppercase">Systems Universe</div>
+  <div class="font-mono text-label-sm uppercase text-on-surface-variant text-center md:text-left">
+    © 2025 Systems Universe. BUILT WITH CLAUDE CODE + GOOGLE SHEETS + APPS SCRIPT + REACT + TAILWIND CSS. ALL SYSTEMS OPERATIONAL.
+  </div>
+  <div class="flex gap-6">
+    <a href="reference-portfolio-os.html" class="text-on-surface-variant hover:text-secondary font-mono text-label-sm uppercase transition-colors">Reference</a>
+    <a href="#products" class="text-on-surface-variant hover:text-secondary font-mono text-label-sm uppercase transition-colors">Products</a>
+    <a href="#roadmap" class="text-on-surface-variant hover:text-secondary font-mono text-label-sm uppercase transition-colors">Roadmap</a>
+  </div>
+</footer>
+
+<!-- ===== NAV SCROLL SPY ===== -->
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('header nav a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if (pageYOffset >= (sectionTop - 200)) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('text-secondary', 'font-bold', 'border-b-2', 'border-secondary');
+      link.classList.add('text-on-surface-variant');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('text-secondary', 'font-bold', 'border-b-2', 'border-secondary');
+        link.classList.remove('text-on-surface-variant');
+      }
+    });
+  });
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Contact popup
+  function toggleContactPopup() {
+    var popup = document.getElementById('contactPopup');
+    popup.classList.toggle('hidden');
+  }
+  function copyEmail() {
+    navigator.clipboard.writeText('giaodich.3p@gmail.com').then(function() {
+      var btn = event.target;
+      var original = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[14px] align-middle mr-1">check</span> Copied!';
+      setTimeout(function() { btn.innerHTML = original; }, 1500);
+    });
+  }
+  // Close popup when clicking outside
+  document.addEventListener('click', function(e) {
+    var popup = document.getElementById('contactPopup');
+    var btn = e.target.closest('button');
+    if (popup && !popup.classList.contains('hidden') && !popup.contains(e.target) && (!btn || !btn.onclick || btn.onclick.toString().indexOf('toggleContactPopup') === -1)) {
+      popup.classList.add('hidden');
+    }
+  });
+</script>
+</body>
+</html>

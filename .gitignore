@@ -1,0 +1,19 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp
+*.swo
+
+# Claude
+.claude/
+
+# Node (if any in future)
+node_modules/
+
+# Temp files
+*.tmp
+*.log
+agency-agents/

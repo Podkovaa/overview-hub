@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PORTFOLIO_OS | Reference Design — Anh Thanh</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#f9f9f9",
+                        "surface-tint": "#476083",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#2f486a",
+                        "on-secondary-fixed": "#001b3b",
+                        "background": "#f9f9f9",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "on-surface-variant": "#43474e",
+                        "tertiary": "#000512",
+                        "primary-fixed": "#d4e3ff",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#1a1c1c",
+                        "secondary": "#005eb2",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e2e2e2",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#4597fe",
+                        "surface-container-high": "#e8e8e8",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#6f88ad",
+                        "primary": "#000613",
+                        "surface-container": "#eeeeee",
+                        "outline-variant": "#c4c6cf",
+                        "surface-container-highest": "#e2e2e2",
+                        "surface-container-low": "#f3f3f3",
+                        "on-background": "#1a1c1c",
+                        "on-tertiary-fixed": "#001b3c",
+                        "on-secondary-fixed-variant": "#004788",
+                        "surface-dim": "#dadada",
+                        "inverse-surface": "#2f3131",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#d5e3ff",
+                        "tertiary-fixed": "#d5e3ff",
+                        "on-secondary-container": "#002e5d",
+                        "primary-container": "#001f3f",
+                        "outline": "#74777f",
+                        "primary-fixed-dim": "#afc8f0",
+                        "tertiary-container": "#001e41",
+                        "inverse-primary": "#afc8f0",
+                        "tertiary-fixed-dim": "#a7c8ff",
+                        "on-tertiary-fixed-variant": "#1f477b",
+                        "secondary-fixed-dim": "#a7c8ff",
+                        "on-tertiary-container": "#6487bf",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-primary-fixed": "#001c3a"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "code": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .blueprint-bg {
+            background-image: radial-gradient(circle, #d0d5dd 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .header-strip {
+            background-color: #001f3f;
+            color: #ffffff;
+        }
+        .border-technical {
+            border: 1px solid #d0d5dd;
+        }
+        .maturity-segment {
+            height: 4px;
+            width: 100%;
+            border-radius: 1px;
+        }
+        .node-line {
+            stroke: #d0d5dd;
+            stroke-width: 1;
+            stroke-dasharray: 4;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-lg text-on-surface">
+<!-- Top Navigation Shell -->
+<header class="bg-surface/80 backdrop-blur-md sticky top-0 z-50 border-b border-outline-variant flex justify-between items-center w-full px-margin-sm md:px-margin-lg py-4 max-w-full">
+<div class="font-label-md text-label-md tracking-tighter text-on-surface uppercase">PORTFOLIO_OS</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-secondary font-bold border-b-2 border-secondary font-label-sm text-label-sm uppercase" href="#hero">Systems</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-sm text-label-sm uppercase" href="#metrics">Stack</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-sm text-label-sm uppercase" href="#ecosystem">Methodology</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-sm text-label-sm uppercase" href="#about">About</a>
+</nav>
+<button class="bg-primary text-on-primary px-4 py-2 font-label-sm text-label-sm uppercase hover:bg-secondary transition-all active:scale-95 rounded">
+            Get In Touch
+        </button>
+</header>
+<main class="blueprint-bg min-h-screen">
+<!-- Hero Section -->
+<section class="max-w-7xl mx-auto px-margin-sm md:px-margin-lg py-24 grid md:grid-cols-2 gap-12 items-center" id="hero">
+<div class="space-y-6">
+<div class="inline-block border-technical px-3 py-1 bg-surface-container-lowest font-label-sm text-label-sm text-secondary uppercase">
+                    SYSTEMS_ARCHITECTURE_V.2.4
+                </div>
+<h1 class="font-display text-display text-primary uppercase leading-tight">PORTFOLIO_OS</h1>
+<p class="font-code text-code text-secondary-container bg-primary-container p-4 border-l-4 border-secondary">
+                    // INITIALIZING CORE ENGINE... <br/>
+                    // DEPLOYING TO GOOGLE CLOUD INFRASTRUCTURE... <br/>
+                    // STATUS: ALL SYSTEMS OPERATIONAL.
+                </p>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+                    A high-precision technical showcase built entirely on the Google Apps Script + Sheets ecosystem. Engineering complex business logic into lean, zero-cost architecture for enterprise scalability.
+                </p>
+<div class="flex gap-4">
+<button class="bg-primary text-on-primary px-6 py-3 font-label-sm text-label-sm uppercase hover:bg-secondary transition-all rounded">View Systems</button>
+<button class="border border-primary text-primary px-6 py-3 font-label-sm text-label-sm uppercase hover:bg-surface-container transition-all rounded">Documentation</button>
+</div>
+</div>
+<div class="relative aspect-square border-technical bg-surface-container-lowest shadow-sm rounded-lg p-8 flex items-center justify-center overflow-hidden">
+<svg class="w-full h-full" viewbox="0 0 400 400">
+<rect fill="#001f3f" height="60" rx="4" width="100" x="150" y="170"></rect>
+<text class="font-label-sm text-[10px] uppercase" fill="#ffffff" text-anchor="middle" x="200" y="205">GAS + Sheets</text>
+<line class="node-line" x1="200" x2="200" y1="170" y2="80"></line>
+<circle class="border-technical fill-surface-container-lowest" cx="200" cy="80" r="25" stroke="#001f3f"></circle>
+<text class="font-label-sm text-[10px] font-bold" text-anchor="middle" x="200" y="84">IV</text>
+<line class="node-line" x1="250" x2="330" y1="185" y2="120"></line>
+<circle class="border-technical fill-surface-container-lowest" cx="330" cy="120" r="25" stroke="#001f3f"></circle>
+<text class="font-label-sm text-[10px] font-bold" text-anchor="middle" x="330" y="124">IN</text>
+<line class="node-line" x1="250" x2="330" y1="215" y2="280"></line>
+<circle class="border-technical fill-surface-container-lowest" cx="330" cy="280" r="25" stroke="#001f3f"></circle>
+<text class="font-label-sm text-[10px] font-bold" text-anchor="middle" x="330" y="284">CH</text>
+<line class="node-line" x1="200" x2="200" y1="230" y2="320"></line>
+<circle class="border-technical fill-surface-container-lowest" cx="200" cy="320" r="25" stroke="#001f3f"></circle>
+<text class="font-label-sm text-[10px] font-bold" text-anchor="middle" x="200" y="324">TB</text>
+<line class="node-line" x1="150" x2="70" y1="215" y2="280"></line>
+<circle class="border-technical fill-surface-container-lowest" cx="70" cy="280" r="25" stroke="#001f3f"></circle>
+<text class="font-label-sm text-[10px] font-bold" text-anchor="middle" x="70" y="284">DL</text>
+<line class="node-line" x1="150" x2="70" y1="185" y2="120"></line>
+<circle class="border-technical fill-surface-container-lowest" cx="70" cy="120" r="25" stroke="#001f3f"></circle>
+<text class="font-label-sm text-[10px] font-bold" text-anchor="middle" x="70" y="124">WE</text>
+</svg>
+</div>
+</section>
+<!-- Metrics Section -->
+<section class="bg-surface-container-lowest border-y border-outline-variant py-12" id="metrics">
+<div class="max-w-7xl mx-auto px-margin-sm md:px-margin-lg grid grid-cols-2 md:grid-cols-6 gap-4">
+<div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Products</span>
+<span class="font-label-md text-headline-md text-secondary">06</span>
+</div>
+<div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Modules</span>
+<span class="font-label-md text-headline-md text-secondary">24</span>
+</div>
+<div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Uptime</span>
+<span class="font-label-md text-headline-md text-secondary">99.9%</span>
+</div>
+<div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">API Calls</span>
+<span class="font-label-md text-headline-md text-secondary">1.2M</span>
+</div>
+<div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Latency</span>
+<span class="font-label-md text-headline-md text-secondary">120ms</span>
+</div>
+<div class="border-technical p-4 flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Cost/Mo</span>
+<span class="font-label-md text-headline-md text-secondary">$0.00</span>
+</div>
+</div>
+</section>
+<!-- Product Ecosystem Section -->
+<section class="max-w-7xl mx-auto px-margin-sm md:px-margin-lg py-24" id="ecosystem">
+<div class="flex items-center gap-4 mb-12">
+<div class="h-12 w-1 bg-secondary"></div>
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary uppercase">Product Ecosystem</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">SCALABLE_SYSTEMS_OVERVIEW</p>
+</div>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<!-- Card 1: Inventory OS -->
+<div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden">
+<div class="header-strip px-4 py-2 flex justify-between items-center">
+<span class="font-label-sm text-label-sm font-bold">IV_001</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 font-label-sm text-[10px] rounded">LIVE</span>
+</div>
+<div class="p-0 border-b border-technical h-48 bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Inventory OS" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAw4PvcWpgYlLtV-ySrbbI9vnB-c34hUMTJ4tuU0XCZbVfBhJXo_NuEUhN1ejPCKsBj7nrhsKi6onDcohrk9kt79guB29kvO6qT1HrrOCe67OVOUGEuMX10ML9oW2d4Qj9ZOjVtLvaBvE9ojxtY_GsTZk84pcNZFOOz4RUZLlx2TUztSihyNI148TPpYhkWBvy_3gALtIrZ4zNvK4sxG-v1JEi8P4H8Y4P48lA9x5jtHdeOCFYEDBKyPkB51v9wH5m7r_c-ey2u9jO-"/>
+</div>
+<div class="p-6 space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary">Inventory OS</h3>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Autonomous stock tracking with integrated reorder trigger logic and supplier portal sync.</p>
+<div class="space-y-2">
+<div class="flex justify-between font-label-sm text-[10px] uppercase text-on-surface-variant"><span>Maturity</span><span>Segment 4/5</span></div>
+<div class="flex gap-1">
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-surface-variant"></div>
+</div>
+</div>
+<button class="w-full border border-primary py-2 font-label-sm text-label-sm uppercase group-hover:bg-primary group-hover:text-on-primary transition-all rounded">View Details</button>
+</div>
+</div>
+<!-- Card 2: Invoice Flow -->
+<div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden">
+<div class="header-strip px-4 py-2 flex justify-between items-center">
+<span class="font-label-sm text-label-sm font-bold">IN_002</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 font-label-sm text-[10px] rounded">LIVE</span>
+</div>
+<div class="p-0 border-b border-technical h-48 bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Invoice Flow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUnyU5EDH_nEABT_tpGlEX8zwP6gFAxUVSBGeW-pKKZOIf1RS_xxvPfg7CcaCUWFeTtW6crA-4_vhJwL4BVjJ7pFxFbION40MZGxIYBpsN19qbYImGwW1r2yrdKUk7WZe26rk2SplnsxGeTVtoMKu2xT1YEPM13klrNMgRKk6ZqO46miKBl1AQTEa7bI2AeaEbOveQX8M1o6sPFTtxjRiHaJd2_EX0KbzPQ_oJqlV-xE2L-npcQH8cXvGSacpN_4TiJVWWcKRihIKo"/>
+</div>
+<div class="p-6 space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary">Invoice Flow</h3>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Automated billing engine with PDF generation, SMTP delivery, and real-time ledger updates.</p>
+<div class="space-y-2">
+<div class="flex justify-between font-label-sm text-[10px] uppercase text-on-surface-variant"><span>Maturity</span><span>Segment 5/5</span></div>
+<div class="flex gap-1">
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+</div>
+</div>
+<button class="w-full border border-primary py-2 font-label-sm text-label-sm uppercase group-hover:bg-primary group-hover:text-on-primary transition-all rounded">View Details</button>
+</div>
+</div>
+<!-- Card 3: Client Hub -->
+<div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden">
+<div class="header-strip px-4 py-2 flex justify-between items-center">
+<span class="font-label-sm text-label-sm font-bold">CH_003</span>
+<span class="bg-surface-variant text-on-surface px-2 py-0.5 font-label-sm text-[10px] rounded">BETA</span>
+</div>
+<div class="p-0 border-b border-technical h-48 bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Client Hub" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpl6HWFUQuvQPR1eX3oH-9mgsPV2x1JJYysaEWEbEcBkOxNZxULc-CVrfNDW81mWnIGjt35jmE2dft3V8n_KwppB7RjWD8V9IeKb3jGH1LDhIc7S0--D9vTZ0L-QCYQeyZ1CvWvwviN_Gm4dp7LFEf1DZd32dwfTyGdk4ErNAqXXTz1sYhb0_Ur9F4mBWkS9OOyNGaG1E6fx34ffD-1HxTWQuTviL_abVQYI7z-nr9yogY41lYKZwhHhhPQA1kokh4uy6ZPX6GeGVB"/>
+</div>
+<div class="p-6 space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary">Client Hub</h3>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Centralized portal for asset sharing, communication logging, and project timeline visualization.</p>
+<div class="space-y-2">
+<div class="flex justify-between font-label-sm text-[10px] uppercase text-on-surface-variant"><span>Maturity</span><span>Segment 3/5</span></div>
+<div class="flex gap-1">
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-surface-variant"></div>
+<div class="maturity-segment bg-surface-variant"></div>
+</div>
+</div>
+<button class="w-full border border-primary py-2 font-label-sm text-label-sm uppercase group-hover:bg-primary group-hover:text-on-primary transition-all rounded">View Details</button>
+</div>
+</div>
+<!-- Card 4: Task Board -->
+<div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden">
+<div class="header-strip px-4 py-2 flex justify-between items-center">
+<span class="font-label-sm text-label-sm font-bold">TB_004</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 font-label-sm text-[10px] rounded">LIVE</span>
+</div>
+<div class="p-0 border-b border-technical h-48 bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Task Board" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN_sjOl975NNLSHfrqym8nagenYkeMwxqENR99Wq0i1OKynddMeuw2b83HhTnHSQPBoeztz_p9N6YpH9x-UGN5ovcJyFm-E8Z_xoBNmIht5ZPU9rAsw3bij181ntKrlZDWzqnBMBGfuMnPThCc3W0dzLxhdhF1vGhQe5hgNoqMNZ-2esRZJLW9NO47bBJ0Sz-KPvubEK9-vH4lE4f1p-Nmoq5sFQaShbj_JmoQA_oZv8MEDfD_vDmiMI5O8wRJO5eRlgKtbxIfUGU-"/>
+</div>
+<div class="p-6 space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary">Task Board</h3>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Kanban-style workflow engine with automatic priority shifts based on due-date proximity.</p>
+<div class="space-y-2">
+<div class="flex justify-between font-label-sm text-[10px] uppercase text-on-surface-variant"><span>Maturity</span><span>Segment 4/5</span></div>
+<div class="flex gap-1">
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-surface-variant"></div>
+</div>
+</div>
+<button class="w-full border border-primary py-2 font-label-sm text-label-sm uppercase group-hover:bg-primary group-hover:text-on-primary transition-all rounded">View Details</button>
+</div>
+</div>
+<!-- Card 5: Data Lens -->
+<div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden">
+<div class="header-strip px-4 py-2 flex justify-between items-center">
+<span class="font-label-sm text-label-sm font-bold">DL_005</span>
+<span class="bg-surface-variant text-on-surface px-2 py-0.5 font-label-sm text-[10px] rounded">BUILDING</span>
+</div>
+<div class="p-0 border-b border-technical h-48 bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Data Lens" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJFYFLeap5sJj9BeKDh4rV6wtkralrVB1zjXDTMadx21ywtfMbJJKu1_9G4P0fnQV4FdlaCZbPqgLbDvx3tEnElpk27tMiPprNsRdLUEuXIOdId_VPX6kRcDSFSMZL7QCLh_x18gMPWuAkHTq30Rrikxp4WC9HjPmhUGBggM501SXcCfx5hCrmSibfZwlBPqmXTYMGMJgEAvVWQelEuapaY1iQr2Sre-U0DqcJCgkLpwSAQdm-nyVc9M5YdGmq_b70rBQBttiN3--B"/>
+</div>
+<div class="p-6 space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary">Data Lens</h3>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Unified dashboard system aggregating data across all modules into actionable Chart.js visuals.</p>
+<div class="space-y-2">
+<div class="flex justify-between font-label-sm text-[10px] uppercase text-on-surface-variant"><span>Maturity</span><span>Segment 2/5</span></div>
+<div class="flex gap-1">
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-surface-variant"></div>
+<div class="maturity-segment bg-surface-variant"></div>
+<div class="maturity-segment bg-surface-variant"></div>
+</div>
+</div>
+<button class="w-full border border-primary py-2 font-label-sm text-label-sm uppercase group-hover:bg-primary group-hover:text-on-primary transition-all rounded">View Details</button>
+</div>
+</div>
+<!-- Card 6: Workflow Engine -->
+<div class="border-technical bg-surface-container-lowest group hover:border-secondary transition-colors duration-300 rounded overflow-hidden">
+<div class="header-strip px-4 py-2 flex justify-between items-center">
+<span class="font-label-sm text-label-sm font-bold">WE_006</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 font-label-sm text-[10px] rounded">LIVE</span>
+</div>
+<div class="p-0 border-b border-technical h-48 bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Workflow Engine" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWmDgkrVPFESaPnsP2zaj9cNUy-xTZDP84h76zO6cEKrU_97UjvH2dPePSnSyzbSVx1R1yj4LWlfzghT37z7xkO_KctEHPbJX__CZKDIx8xJbb6ybCx7Y_kYeraU_9g_rFpUXFNXWVio_0d9q-CRgJzxeKQasKdnNheQrRj8ut3wc3JJHiSI0oM3QdQ49p5I2JFQssB6zKzmaKXSxlQUFESQUNBdmemmS4jcnUS58wJ5EHR5spIJim_hlagzfK7CP3xnzoMM4zRe1h"/>
+</div>
+<div class="p-6 space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary">Workflow Engine</h3>
+<p class="text-body-sm text-on-surface-variant line-clamp-2">Low-code automation layer handling complex conditional logic and cross-application triggers.</p>
+<div class="space-y-2">
+<div class="flex justify-between font-label-sm text-[10px] uppercase text-on-surface-variant"><span>Maturity</span><span>Segment 5/5</span></div>
+<div class="flex gap-1">
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+<div class="maturity-segment bg-secondary"></div>
+</div>
+</div>
+<button class="w-full border border-primary py-2 font-label-sm text-label-sm uppercase group-hover:bg-primary group-hover:text-on-primary transition-all rounded">View Details</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Tech Stack Section -->
+<section class="max-w-7xl mx-auto px-margin-sm md:px-margin-lg py-24 bg-surface-container-lowest border-technical shadow-sm rounded-xl" id="tech-stack">
+<div class="grid md:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<h2 class="font-headline-lg text-headline-lg text-primary uppercase">Infrastructure Stack</h2>
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary flex items-center justify-center text-on-primary font-bold">01</div>
+<div><h4 class="font-label-md text-label-md font-bold text-primary uppercase">Google Apps Script</h4><p class="text-body-sm text-on-surface-variant">Cloud execution engine for V8 Javascript backend logic.</p></div>
+</div>
+<div class="flex items-center gap-4 pl-8 border-l border-outline-variant">
+<div class="w-12 h-12 bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold">02</div>
+<div><h4 class="font-label-md text-label-md font-bold text-primary uppercase">Google Sheets</h4><p class="text-body-sm text-on-surface-variant">High-performance relational data warehouse and API end-point.</p></div>
+</div>
+<div class="flex items-center gap-4 pl-16 border-l border-outline-variant">
+<div class="w-12 h-12 bg-surface-container-high flex items-center justify-center text-primary font-bold">03</div>
+<div><h4 class="font-label-md text-label-md font-bold text-primary uppercase">Modern UI/UX</h4><p class="text-body-sm text-on-surface-variant">Tailwind CSS + HTML5 + Chart.js for enterprise-grade interfaces.</p></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="border-technical p-6 bg-surface space-y-2"><span class="material-symbols-outlined text-secondary">database</span><h4 class="font-label-sm text-label-sm font-bold uppercase">Relational Data</h4><p class="text-[10px] text-on-surface-variant leading-tight">Advanced indexing and relationship management via script.</p></div>
+<div class="border-technical p-6 bg-surface space-y-2"><span class="material-symbols-outlined text-secondary">terminal</span><h4 class="font-label-sm text-label-sm font-bold uppercase">Web App Engine</h4><p class="text-[10px] text-on-surface-variant leading-tight">Deploying scalable frontends direct from Apps Script.</p></div>
+<div class="border-technical p-6 bg-surface space-y-2"><span class="material-symbols-outlined text-secondary">sync</span><h4 class="font-label-sm text-label-sm font-bold uppercase">Trigger System</h4><p class="text-[10px] text-on-surface-variant leading-tight">Time-driven and event-driven automation cycles.</p></div>
+<div class="border-technical p-6 bg-surface space-y-2"><span class="material-symbols-outlined text-secondary">security</span><h4 class="font-label-sm text-label-sm font-bold uppercase">IAM Security</h4><p class="text-[10px] text-on-surface-variant leading-tight">Native Google Cloud permissions and identity management.</p></div>
+<div class="border-technical p-6 bg-surface space-y-2"><span class="material-symbols-outlined text-secondary">bar_chart</span><h4 class="font-label-sm text-label-sm font-bold uppercase">Visual Intel</h4><p class="text-[10px] text-on-surface-variant leading-tight">Real-time data visualization via Chart.js integration.</p></div>
+<div class="border-technical p-6 bg-surface space-y-2"><span class="material-symbols-outlined text-secondary">api</span><h4 class="font-label-sm text-label-sm font-bold uppercase">Extensibility</h4><p class="text-[10px] text-on-surface-variant leading-tight">Native connectivity with Workspace APIs (Gmail, Drive).</p></div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="max-w-4xl mx-auto px-margin-sm md:px-margin-lg py-24 text-center" id="about">
+<div class="inline-block mb-8 relative p-2 border border-secondary rounded-full">
+<img class="w-32 h-32 rounded-full object-cover filter grayscale hover:grayscale-0 transition-all duration-500" alt="Portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcRngcMBl7IibvWlCyLu5ce0L02Y5t6CafcwQnPwe5BLZXdebtNHEFOFrKcXLYddaN173dZv5TnSbQb4R7-RMzwCtndRATkz6V3KyFDNSeqNCUOQQ2ttqjQkWGanDSLpC-N60aFlJfqq4SiUDtQC5TRVTJ7liVmE3S4rp-WJGnrMXGHkrproo11RDIjRuoqeeFH9aKSREIFnt9LrXTvf2CU_42uJZNCd6AZV4RwJdE2jQ6lIU7-BzNBIG0NdeniX_xs6-kQTxpa0Hf"/>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary uppercase mb-4">Architectural Vision</h2>
+<p class="text-body-lg text-on-surface-variant mb-12">
+                I specialize in "0-Cost Infrastructure"—designing enterprise-grade business systems that live within the Google ecosystem. By leveraging Apps Script as a middleware and Sheets as a database, I build complex workflows that eliminate monthly SaaS overhead while maintaining professional standards of security and performance.
+            </p>
+<div class="flex flex-wrap justify-center gap-4">
+<button class="bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm uppercase flex items-center gap-2 hover:bg-secondary transition-all rounded"><span class="material-symbols-outlined text-[18px]">download</span>Download CV</button>
+<button class="border border-primary text-primary px-8 py-3 font-label-sm text-label-sm uppercase flex items-center gap-2 hover:bg-surface-container transition-all rounded"><span class="material-symbols-outlined text-[18px]">link</span>LinkedIn</button>
+<button class="border border-outline text-on-surface-variant px-8 py-3 font-label-sm text-label-sm uppercase flex items-center gap-2 hover:bg-surface-container transition-all rounded"><span class="material-symbols-outlined text-[18px]">mail</span>Contact</button>
+</div>
+</section>
+</main>
+<footer class="bg-surface dark:bg-surface-container-lowest w-full px-margin-sm md:px-margin-lg py-grid-size flex flex-col md:flex-row justify-between items-center gap-4 border-t border-dashed border-outline-variant">
+<div class="font-label-md text-label-md text-primary uppercase">PORTFOLIO_OS</div>
+<div class="font-label-sm text-label-sm uppercase text-on-surface-variant text-center md:text-left">© 2024 PORTFOLIO_OS. BUILT WITH GOOGLE SHEETS + APPS SCRIPT. ALL SYSTEMS OPERATIONAL.</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-secondary font-label-sm text-label-sm uppercase transition-colors" href="#">Documentation</a>
+<a class="text-on-surface-variant hover:text-secondary font-label-sm text-label-sm uppercase transition-colors" href="#">Changelog</a>
+<a class="text-on-surface-variant hover:text-secondary font-label-sm text-label-sm uppercase transition-colors" href="#">Uptime</a>
+</div>
+</footer>
+<script>
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('text-secondary', 'font-bold', 'border-b-2', 'border-secondary');
+                link.classList.add('text-on-surface-variant');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('text-secondary', 'font-bold', 'border-b-2', 'border-secondary');
+                    link.classList.remove('text-on-surface-variant');
+                }
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MiniFinance — Quản lý Tài chính Cá nhân</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #6366f1; --primary-dark: #4f46e5; --bg: #f8fafc; --card: #ffffff;
+      --text: #1e293b; --muted: #64748b; --border: #e2e8f0;
+      --income: #10b981; --expense: #ef4444; --saving: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    .app-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 200px; background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%); color: white; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; overflow-y: auto; }
+    .sidebar-brand { padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-brand h4 { font-weight: 800; font-size: 1rem; }
+    .sidebar .nav-link { color: rgba(255,255,255,0.7); padding: 10px 16px; font-size: 0.85rem; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: all 0.2s; }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { color: white; background: rgba(255,255,255,0.1); }
+    .main-content { margin-left: 200px; flex: 1; padding: 20px; }
+
+    .kpi-card { background: var(--card); border-radius: 14px; padding: 18px; border: 1px solid var(--border); }
+    .kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .kpi-value { font-size: 1.5rem; font-weight: 800; }
+    .kpi-label { font-size: 0.78rem; color: var(--muted); }
+    .card { border: 1px solid var(--border); border-radius: 14px; }
+    .card-header { background: white; font-weight: 700; border-radius: 14px 14px 0 0 !important; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+
+    .tx-item { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; transition: background 0.15s; }
+    .tx-item:hover { background: #f8fafc; }
+    .tx-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .tx-category { font-weight: 700; font-size: 0.9rem; }
+    .tx-desc { font-size: 0.78rem; color: var(--muted); }
+    .tx-amount { font-weight: 800; font-size: 0.95rem; text-align: right; }
+    .tx-amount.income { color: var(--income); }
+    .tx-amount.expense { color: var(--expense); }
+
+    .goal-progress { height: 10px; border-radius: 5px; background: #e2e8f0; overflow: hidden; }
+    .goal-bar { height: 100%; border-radius: 5px; transition: width 0.5s; }
+    .tab-btn { padding: 8px 16px; border: none; background: none; font-weight: 600; font-size: 0.85rem; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .floating-btn { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--primary); color: white; border: none; font-size: 1.5rem; box-shadow: 0 4px 20px rgba(99,102,241,0.4); cursor: pointer; z-index: 200; transition: transform 0.2s; }
+    .floating-btn:hover { transform: scale(1.1); }
+    .floating-btn.expense-btn { background: var(--expense); bottom: 92px; box-shadow: 0 4px 20px rgba(239,68,68,0.4); }
+
+    .form-control, .form-select { border-radius: 8px; padding: 10px 14px; border: 1px solid var(--border); }
+    .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+    .btn { border-radius: 8px; font-weight: 600; }
+    .btn-primary { background: var(--primary); border-color: var(--primary); }
+    .modal-content { border-radius: 16px; border: none; }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; padding: 16px; padding-bottom: 80px; }
+      .kpi-value { font-size: 1.2rem; }
+      .floating-btn { bottom: 80px; right: 16px; width: 48px; height: 48px; font-size: 1.2rem; }
+      .floating-btn.expense-btn { bottom: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <h4>💰 MiniFinance</h4>
+      <small style="opacity:0.6;font-size:0.7rem;">Tài chính cá nhân</small>
+    </div>
+    <a class="nav-link active" href="#" onclick="navigate('dashboard')" data-page="dashboard"><i class="fas fa-chart-pie"></i>Dashboard</a>
+    <a class="nav-link" href="#" onclick="navigate('transactions')" data-page="transactions"><i class="fas fa-list"></i>Giao dịch</a>
+    <a class="nav-link" href="#" onclick="navigate('budget')" data-page="budget"><i class="fas fa-wallet"></i>Ngân sách</a>
+    <a class="nav-link" href="#" onclick="navigate('goals')" data-page="goals"><i class="fas fa-bullseye"></i>Mục tiêu</a>
+    <a class="nav-link" href="#" onclick="navigate('accounts')" data-page="accounts"><i class="fas fa-credit-card"></i>Tài khoản</a>
+    <div style="margin-top:8px;border-top:1px solid rgba(255,255,255,0.1);padding-top:8px;">
+      <a class="nav-link" href="#" onclick="switchToPortfolio()"><i class="fas fa-chart-line"></i>Portfolio →</a>
+    </div>
+    <div style="position:absolute;bottom:60px;left:12px;right:12px;">
+      <button class="btn btn-sm btn-outline-light w-100" onclick="setupDemo()"><i class="fas fa-wand-magic-sparkles me-1"></i>Tạo dữ liệu mẫu</button>
+    </div>
+  </div>
+
+  <div class="main-content" id="mainContent"></div>
+</div>
+
+<button class="floating-btn expense-btn" onclick="showAddTx('expense')" title="Thêm chi tiêu"><i class="fas fa-minus"></i></button>
+<button class="floating-btn" onclick="showAddTx('income')" title="Thêm thu nhập"><i class="fas fa-plus"></i></button>
+<div id="modalContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+var APP = { page: 'dashboard', chart: null, categories: [], accounts: [], financeData: null };
+
+function callGs(func) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  return new Promise(function(resolve, reject) {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[func].apply(null, args);
+    } else { console.warn('Offline - google.script.run unavailable'); resolve(null); }
+  });
+}
+
+function fmt(n) { if (n == null || isNaN(n)) return '0đ'; return Number(n).toLocaleString('vi-VN') + 'đ'; }
+function fmtDate(d) { if (!d) return ''; try { return new Date(d).toLocaleDateString('vi-VN'); } catch(e) { return d; } }
+
+// === NAVIGATION ===
+async function navigate(page) {
+  APP.page = page;
+  document.querySelectorAll('.sidebar .nav-link').forEach(function(l) { l.classList.remove('active'); });
+  var link = document.querySelector('.sidebar .nav-link[data-page="' + page + '"]');
+  if (link) link.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+
+  if (page === 'dashboard') await renderDashboard();
+  else if (page === 'transactions') await renderTransactions();
+  else if (page === 'budget') await renderBudget();
+  else if (page === 'goals') await renderGoals();
+  else if (page === 'accounts') await renderAccounts();
+}
+
+function switchToPortfolio() {
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    window.open(window.location.href.replace(/page=\w+/, 'page=portfolio'), '_self');
+  } else {
+    window.location.href = 'portfolio.html';
+  }
+}
+
+// === DASHBOARD ===
+async function renderDashboard() {
+  APP.financeData = await callGs('getFinanceDashboard');
+  var d = APP.financeData;
+  if (!d) { document.getElementById('mainContent').innerHTML = '<p class="text-center text-muted py-5">Đang tải...</p>'; return; }
+
+  var incomeChange = d.incomeChange > 0 ? '<span style="color:var(--income)">↑' + d.incomeChange + '%</span>' : (d.incomeChange < 0 ? '<span style="color:var(--expense)">↓' + Math.abs(d.incomeChange) + '%</span>' : '');
+  var expenseChange = d.expenseChange > 0 ? '<span style="color:var(--expense)">↑' + d.expenseChange + '%</span>' : (d.expenseChange < 0 ? '<span style="color:var(--income)">↓' + Math.abs(d.expenseChange) + '%</span>' : '');
+
+  var html = '<div class="d-flex justify-content-between align-items-center mb-3"><h2 style="font-weight:800;">Dashboard</h2><span style="font-size:0.85rem;color:var(--muted);">Tháng ' + d.month + '</span></div>';
+
+  html += '<div class="row g-3 mb-4">' +
+    kpiCard('Tổng tài sản', fmt(d.totalBalance), 'Số dư tất cả tài khoản', '#6366f1', 'fa-piggy-bank') +
+    kpiCard('Thu nhập tháng', fmt(d.monthIncome), incomeChange + ' vs tháng trước', '#10b981', 'fa-arrow-down') +
+    kpiCard('Chi tiêu tháng', fmt(d.monthExpense), expenseChange + ' vs tháng trước', '#ef4444', 'fa-arrow-up') +
+    kpiCard('Tiết kiệm', d.savingsRate + '%', fmt(d.monthNet), '#f59e0b', 'fa-chart-pie') +
+    '</div>';
+
+  // Biểu đồ dòng tiền
+  html += '<div class="row g-3 mb-4"><div class="col-md-8"><div class="card"><div class="card-header">Dòng tiền 30 ngày</div><div class="card-body"><canvas id="cashflowChart" height="220"></canvas></div></div></div>';
+
+  // Category breakdown
+  html += '<div class="col-md-4"><div class="card h-100"><div class="card-header">Chi tiêu theo danh mục</div><div class="card-body" style="max-height:300px;overflow-y:auto;">';
+  var expenses = (d.categoryBreakdown || []).filter(function(c) { return c.type === 'expense'; }).sort(function(a, b) { return b.amount - a.amount; });
+  if (expenses.length === 0) {
+    html += '<p class="text-muted text-center py-3">Chưa có dữ liệu</p>';
+  } else {
+    var maxExp = expenses[0].amount;
+    expenses.forEach(function(c) {
+      var pct = maxExp > 0 ? (c.amount / maxExp * 100) : 0;
+      var color = getCatColor(c.category);
+      html += '<div class="mb-3"><div class="d-flex justify-content-between mb-1"><span style="font-size:0.85rem;font-weight:600;">' + color.icon + ' ' + c.category + '</span><span style="font-weight:700;font-size:0.85rem;">' + fmt(c.amount) + '</span></div><div class="goal-progress"><div class="goal-bar" style="width:' + pct + '%;background:' + color.color + ';"></div></div></div>';
+    });
+  }
+  html += '</div></div></div></div>';
+
+  // Budget overview
+  html += '<div class="card"><div class="card-header">Ngân sách tháng</div><div class="card-body">';
+  var budgets = d.budgetComparison || [];
+  if (budgets.length === 0) {
+    html += '<p class="text-muted text-center py-2">Chưa thiết lập ngân sách. Vào Cài đặt → Danh mục để đặt hạn mức.</p>';
+  } else {
+    html += '<div class="row">';
+    budgets.slice(0, 6).forEach(function(b) {
+      var pct = b.budget > 0 ? Math.min(100, Math.round(b.actual / b.budget * 100)) : 0;
+      var barColor = pct > 90 ? '#ef4444' : (pct > 70 ? '#f59e0b' : '#10b981');
+      html += '<div class="col-md-4 mb-3"><div class="d-flex justify-content-between mb-1"><span style="font-weight:600;font-size:0.85rem;">' + b.icon + ' ' + b.category + '</span><span style="font-size:0.8rem;">' + fmt(b.actual) + ' / ' + fmt(b.budget) + '</span></div><div class="goal-progress"><div class="goal-bar" style="width:' + pct + '%;background:' + barColor + ';"></div></div></div>';
+    });
+    html += '</div>';
+  }
+  html += '</div></div>';
+
+  document.getElementById('mainContent').innerHTML = html;
+
+  // Vẽ chart
+  setTimeout(function() {
+    var cf = d.cashflow || [];
+    var ctx = document.getElementById('cashflowChart');
+    if (!ctx || cf.length === 0) return;
+    if (APP.chart) APP.chart.destroy();
+    APP.chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: cf.map(function(x) { return x.date.substring(5); }),
+        datasets: [
+          { label: 'Thu', data: cf.map(function(x) { return x.income; }), backgroundColor: '#10b981', borderRadius: 4, borderSkipped: false },
+          { label: 'Chi', data: cf.map(function(x) { return -x.expense; }), backgroundColor: '#ef4444', borderRadius: 4, borderSkipped: false }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } },
+        scales: {
+          x: { stacked: false, grid: { display: false }, ticks: { maxTicksLimit: 10, font: { size: 10 } } },
+          y: { stacked: false, grid: { color: '#f1f5f9' }, ticks: { callback: function(v) { return v >= 1000000 ? (v/1000000).toFixed(0) + 'tr' : (v/1000).toFixed(0) + 'k'; }, font: { size: 10 } } }
+        }
+      }
+    });
+  }, 200);
+}
+
+function kpiCard(label, value, subtitle, color, icon) {
+  return '<div class="col-6 col-md-3"><div class="kpi-card"><div class="d-flex justify-content-between align-items-start mb-2"><div class="kpi-icon" style="background:' + color + '15;color:' + color + ';"><i class="fas ' + icon + '"></i></div><span style="font-size:0.75rem;color:var(--muted);">' + (subtitle || '') + '</span></div><div class="kpi-value">' + value + '</div><div class="kpi-label">' + label + '</div></div></div>';
+}
+
+function getCatColor(catName) {
+  var map = { 'Ăn uống': {color:'#ef4444',icon:'🍜'}, 'Di chuyển': {color:'#f59e0b',icon:'🏍️'}, 'Nhà ở & Điện nước': {color:'#8b5cf6',icon:'🏠'}, 'Mua sắm': {color:'#ec4899',icon:'🛍️'}, 'Giải trí': {color:'#06b6d4',icon:'🎬'}, 'Sức khỏe': {color:'#14b8a6',icon:'💊'}, 'Học tập': {color:'#6366f1',icon:'📚'}, 'Lương': {color:'#10b981',icon:'💰'}, 'Thưởng': {color:'#10b981',icon:'🎁'}, 'Freelance': {color:'#10b981',icon:'💻'}, 'Đầu tư': {color:'#10b981',icon:'📈'} };
+  return map[catName] || { color: '#6b7280', icon: '📌' };
+}
+
+// === DANH SÁCH GIAO DỊCH ===
+async function renderTransactions(filterType) {
+  APP.categories = await callGs('getCategories') || [];
+  APP.accounts = await callGs('getAccounts') || [];
+  var month = new Date().toISOString().substring(0, 7);
+  var txs = await callGs('getTransactions', { month: month, limit: 100 }) || [];
+
+  var html = '<div class="d-flex justify-content-between align-items-center mb-3"><h2 style="font-weight:800;">Giao dịch</h2><div class="d-flex gap-2"><select class="form-select form-select-sm" style="width:auto;" onchange="renderTransactions(this.value)" id="txFilter"><option value="all">Tất cả</option><option value="income">Thu nhập</option><option value="expense">Chi tiêu</option></select></div></div>';
+
+  if (filterType && filterType !== 'all') txs = txs.filter(function(t) { return t.type === filterType; });
+
+  html += '<div class="d-flex gap-2 mb-3"><button class="tab-btn ' + (!filterType || filterType === 'all' ? 'active' : '') + '" onclick="renderTransactions(\'all\')">Tất cả</button><button class="tab-btn ' + (filterType === 'income' ? 'active' : '') + '" onclick="renderTransactions(\'income\')">Thu nhập</button><button class="tab-btn ' + (filterType === 'expense' ? 'active' : '') + '" onclick="renderTransactions(\'expense\')">Chi tiêu</button></div>';
+
+  if (txs.length === 0) {
+    html += '<div style="text-align:center;padding:60px;color:var(--muted);"><i class="fas fa-inbox" style="font-size:3rem;opacity:0.2;display:block;margin-bottom:12px;"></i>Chưa có giao dịch nào</div>';
+  } else {
+    html += '<div class="card"><div class="list-group list-group-flush" style="max-height:60vh;overflow-y:auto;">';
+    var totalIncome = 0, totalExpense = 0;
+    txs.forEach(function(tx) {
+      var color = getCatColor(tx.category);
+      var sign = tx.type === 'income' ? '+' : '-';
+      var cls = tx.type === 'income' ? 'income' : 'expense';
+      if (tx.type === 'income') totalIncome += tx.amount; else totalExpense += tx.amount;
+      html += '<div class="tx-item"><div class="tx-icon" style="background:' + color.color + '15;color:' + color.color + ';">' + color.icon + '</div><div style="flex:1;"><div class="tx-category">' + tx.category + '</div><div class="tx-desc">' + fmtDate(tx.date) + (tx.description ? ' · ' + tx.description : '') + '</div></div><div class="tx-amount ' + cls + '">' + sign + fmt(tx.amount) + '</div><button class="btn btn-sm text-danger ms-2" onclick="deleteTx(\'' + tx.id + '\')" title="Xóa"><i class="fas fa-trash"></i></button></div>';
+    });
+    html += '</div><div class="card-footer bg-white d-flex justify-content-between"><span>Tổng thu: <strong style="color:var(--income);">' + fmt(totalIncome) + '</strong></span><span>Tổng chi: <strong style="color:var(--expense);">' + fmt(totalExpense) + '</strong></span><span>Ròng: <strong>' + fmt(totalIncome - totalExpense) + '</strong></span></div></div>';
+  }
+
+  document.getElementById('mainContent').innerHTML = html;
+  if (filterType) document.getElementById('txFilter').value = filterType;
+}
+
+async function deleteTx(id) {
+  if (!confirm('Xóa giao dịch này?')) return;
+  await callGs('deleteTransaction', id);
+  renderTransactions();
+}
+
+// === FORM THÊM GIAO DỊCH ===
+function showAddTx(type) {
+  APP.categories = APP.categories || [];
+  APP.accounts = APP.accounts || [];
+  var cats = APP.categories.filter(function(c) { return c.type === type; });
+  var catOptions = cats.map(function(c) { return '<option value="' + c.name + '">' + c.icon + ' ' + c.name + '</option>'; }).join('');
+  var accOptions = APP.accounts.map(function(a) { return '<option value="' + a.id + '">' + a.name + '</option>'; }).join('');
+  var title = type === 'income' ? 'Thêm thu nhập' : 'Thêm chi tiêu';
+  var icon = type === 'income' ? '💰' : '💸';
+
+  var html = '<div class="modal fade show d-block" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5>' + icon + ' ' + title + '</h5><button class="btn-close" onclick="closeModal()"></button></div><div class="modal-body">' +
+    '<div class="mb-3"><label class="form-label fw-bold">Số tiền</label><div class="input-group"><input class="form-control form-control-lg" type="number" id="txAmount" placeholder="0" autofocus style="font-size:1.5rem;font-weight:800;"></div></div>' +
+    '<div class="mb-3"><label class="form-label">Danh mục</label><select class="form-select" id="txCategory">' + catOptions + '</select></div>' +
+    '<div class="mb-3"><label class="form-label">Tài khoản</label><select class="form-select" id="txAccount">' + accOptions + '</select></div>' +
+    '<div class="mb-3"><label class="form-label">Ngày</label><input class="form-control" type="date" id="txDate" value="' + new Date().toISOString().substring(0,10) + '"></div>' +
+    '<div class="mb-3"><label class="form-label">Ghi chú</label><input class="form-control" id="txDesc" placeholder="(tùy chọn)"></div>' +
+    '<input type="hidden" id="txType" value="' + type + '">' +
+    '</div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveTx()">Lưu</button></div></div></div></div><div class="modal-backdrop fade show"></div>';
+  var div = document.createElement('div');
+  div.id = 'modalContainer';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+  document.getElementById('txAmount').focus();
+}
+
+async function saveTx() {
+  var tx = {
+    type: document.getElementById('txType').value,
+    category: document.getElementById('txCategory').value,
+    amount: parseInt(document.getElementById('txAmount').value) || 0,
+    accountId: document.getElementById('txAccount').value,
+    date: document.getElementById('txDate').value,
+    description: document.getElementById('txDesc').value
+  };
+  if (tx.amount <= 0) { alert('Vui lòng nhập số tiền'); return; }
+  await callGs('addTransaction', tx);
+  closeModal();
+  if (APP.page === 'dashboard') await renderDashboard();
+  else if (APP.page === 'transactions') await renderTransactions();
+}
+
+// === NGÂN SÁCH ===
+async function renderBudget() {
+  var d = await callGs('getFinanceDashboard');
+  if (!d) return;
+  var budgets = d.budgetComparison || [];
+  var html = '<div class="d-flex justify-content-between align-items-center mb-3"><h2 style="font-weight:800;">Ngân sách tháng</h2><span style="color:var(--muted);">' + d.month + '</span></div><div class="card"><div class="card-body">';
+
+  if (budgets.length === 0) {
+    html += '<div style="text-align:center;padding:60px;color:var(--muted);"><i class="fas fa-wallet" style="font-size:3rem;opacity:0.2;display:block;margin-bottom:12px;"></i><p>Chưa có ngân sách</p><p style="font-size:0.85rem;">Thiết lập hạn mức chi tiêu cho từng danh mục trong Cài đặt danh mục</p></div>';
+  } else {
+    budgets.forEach(function(b) {
+      var pct = b.budget > 0 ? Math.round(b.actual / b.budget * 100) : 0;
+      var barColor = pct > 90 ? '#ef4444' : (pct > 70 ? '#f59e0b' : '#10b981');
+      var status = pct > 90 ? 'Vượt ngân sách!' : (pct > 70 ? 'Sắp hết' : 'Tốt');
+      var statusColor = pct > 90 ? '#ef4444' : (pct > 70 ? '#f59e0b' : '#10b981');
+      html += '<div class="mb-4"><div class="d-flex justify-content-between mb-1"><span style="font-weight:700;">' + b.icon + ' ' + b.category + '</span><span style="color:' + statusColor + ';font-weight:600;font-size:0.85rem;">' + status + '</span></div><div class="d-flex justify-content-between mb-2"><span style="font-size:0.85rem;">' + fmt(b.actual) + ' / ' + fmt(b.budget) + '</span><span style="font-weight:700;">Còn: ' + fmt(Math.max(0, b.remaining)) + '</span></div><div class="goal-progress"><div class="goal-bar" style="width:' + Math.min(pct, 100) + '%;background:' + barColor + ';"></div></div></div>';
+    });
+  }
+
+  html += '</div></div>';
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+// === MỤC TIÊU ===
+async function renderGoals() {
+  var goals = await callGs('getSavingsGoals') || [];
+  var html = '<div class="d-flex justify-content-between align-items-center mb-3"><h2 style="font-weight:800;">Mục tiêu tiết kiệm</h2><button class="btn btn-primary btn-sm" onclick="showAddGoal()"><i class="fas fa-plus me-1"></i>Thêm</button></div>';
+
+  if (goals.length === 0) {
+    html += '<div style="text-align:center;padding:60px;color:var(--muted);"><i class="fas fa-bullseye" style="font-size:3rem;opacity:0.2;display:block;margin-bottom:12px;"></i><p>Chưa có mục tiêu</p></div>';
+  } else {
+    html += '<div class="row g-3">';
+    goals.forEach(function(g) {
+      var pct = g.targetAmount > 0 ? Math.round(g.currentAmount / g.targetAmount * 100) : 0;
+      var isDone = g.status === 'completed';
+      var color = g.color || '#6366f1';
+      var icon = isDone ? '✅' : (g.icon || '🎯');
+      html += '<div class="col-md-6"><div class="card"><div class="card-body"><div class="d-flex justify-content-between mb-2"><span style="font-size:1.5rem;">' + icon + '</span><span style="font-weight:800;font-size:1.1rem;">' + fmt(g.currentAmount) + ' / ' + fmt(g.targetAmount) + '</span></div><div style="font-weight:700;margin-bottom:8px;">' + g.name + '</div><div class="goal-progress mb-2"><div class="goal-bar" style="width:' + pct + '%;background:' + (isDone ? '#10b981' : color) + ';"></div></div><div class="d-flex justify-content-between"><span style="font-size:0.8rem;">' + pct + '%</span><span style="font-size:0.8rem;color:var(--muted);">' + (g.deadline ? 'Hạn: ' + fmtDate(g.deadline) : '') + '</span></div>' +
+        (!isDone ? '<button class="btn btn-sm btn-outline-primary mt-2" onclick="addGoalAmount(\'' + g.id + '\')"><i class="fas fa-plus me-1"></i>Thêm tiền</button>' : '') + '</div></div></div>';
+    });
+    html += '</div>';
+  }
+
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function showAddGoal() {
+  var html = '<div class="modal fade show d-block" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5>Thêm mục tiêu</h5><button class="btn-close" onclick="closeModal()"></button></div><div class="modal-body">' +
+    '<div class="mb-3"><label class="form-label">Tên mục tiêu</label><input class="form-control" id="goalName" placeholder="VD: Mua xe máy"></div>' +
+    '<div class="mb-3"><label class="form-label">Số tiền mục tiêu</label><input class="form-control" type="number" id="goalAmount" placeholder="0"></div>' +
+    '<div class="mb-3"><label class="form-label">Ngày hoàn thành (tùy chọn)</label><input class="form-control" type="date" id="goalDeadline"></div>' +
+    '<div class="mb-3"><label class="form-label">Icon</label><select class="form-select" id="goalIcon"><option value="🏠">🏠 Nhà</option><option value="🚗">🚗 Xe</option><option value="✈️">✈️ Du lịch</option><option value="📚">📚 Học tập</option><option value="💻">💻 Thiết bị</option><option value="🛡️">🛡️ Khẩn cấp</option><option value="🎯">🎯 Khác</option></select></div>' +
+    '</div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveGoal()">Lưu</button></div></div></div></div><div class="modal-backdrop fade show"></div>';
+  var div = document.createElement('div');
+  div.id = 'modalContainer';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+}
+
+async function saveGoal() {
+  var goal = {
+    name: document.getElementById('goalName').value,
+    targetAmount: parseInt(document.getElementById('goalAmount').value) || 0,
+    deadline: document.getElementById('goalDeadline').value,
+    icon: document.getElementById('goalIcon').value
+  };
+  if (!goal.name || goal.targetAmount <= 0) { alert('Vui lòng nhập đầy đủ'); return; }
+  await callGs('addSavingsGoal', goal);
+  closeModal();
+  renderGoals();
+}
+
+async function addGoalAmount(id) {
+  var amount = prompt('Số tiền thêm vào:');
+  if (!amount || isNaN(amount)) return;
+  await callGs('updateSavingsGoal', id, parseInt(amount));
+  renderGoals();
+}
+
+// === TÀI KHOẢN ===
+async function renderAccounts() {
+  APP.accounts = await callGs('getAccounts') || [];
+  var html = '<div class="d-flex justify-content-between align-items-center mb-3"><h2 style="font-weight:800;">Tài khoản</h2><button class="btn btn-primary btn-sm" onclick="showAddAccount()"><i class="fas fa-plus me-1"></i>Thêm</button></div><div class="row g-3">';
+
+  var totalBalance = 0;
+  var typeLabels = { cash: 'Tiền mặt', bank: 'Ngân hàng', ewallet: 'Ví điện tử' };
+  var typeIcons = { cash: '💵', bank: '🏦', ewallet: '📱' };
+
+  APP.accounts.forEach(function(a) {
+    totalBalance += a.currentBalance;
+    html += '<div class="col-md-4"><div class="card"><div class="card-body"><div class="d-flex justify-content-between mb-2"><span style="font-size:2rem;">' + (typeIcons[a.type] || '💳') + '</span><span style="font-size:0.78rem;color:var(--muted);">' + (typeLabels[a.type] || a.type) + '</span></div><div style="font-weight:800;font-size:1.2rem;">' + a.name + '</div><div style="font-size:1.3rem;font-weight:800;color:var(--primary);">' + fmt(a.currentBalance) + '</div></div></div></div>';
+  });
+
+  html += '</div><div class="card mt-4"><div class="card-body text-center"><span style="font-weight:800;font-size:1.3rem;">Tổng tài sản: <span style="color:var(--primary);">' + fmt(totalBalance) + '</span></span></div></div>';
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function showAddAccount() {
+  var html = '<div class="modal fade show d-block" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5>Thêm tài khoản</h5><button class="btn-close" onclick="closeModal()"></button></div><div class="modal-body">' +
+    '<div class="mb-3"><label class="form-label">Tên</label><input class="form-control" id="accName" placeholder="VD: Ví Momo, TK Techcombank"></div>' +
+    '<div class="mb-3"><label class="form-label">Loại</label><select class="form-select" id="accType"><option value="cash">Tiền mặt</option><option value="bank">Ngân hàng</option><option value="ewallet">Ví điện tử</option></select></div>' +
+    '<div class="mb-3"><label class="form-label">Số dư ban đầu</label><input class="form-control" type="number" id="accBalance" value="0"></div>' +
+    '</div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="saveAccount()">Lưu</button></div></div></div></div><div class="modal-backdrop fade show"></div>';
+  var div = document.createElement('div');
+  div.id = 'modalContainer';
+  div.innerHTML = html;
+  document.body.appendChild(div);
+}
+
+async function saveAccount() {
+  var acc = { name: document.getElementById('accName').value, type: document.getElementById('accType').value, initialBalance: parseInt(document.getElementById('accBalance').value) || 0 };
+  if (!acc.name) { alert('Vui lòng nhập tên'); return; }
+  await callGs('addAccount', acc);
+  closeModal();
+  renderAccounts();
+}
+
+// === UTILS ===
+function closeModal() { var el = document.getElementById('modalContainer'); if (el) el.innerHTML = ''; }
+async function setupDemo() { var r = await callGs('setupFinanceDemo'); if (r) alert(r.message); navigate('dashboard'); }
+
+// Khởi chạy
+navigate('dashboard');
+</script>
+</body>
+</html>

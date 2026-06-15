@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniPOS — Chi tiết sản phẩm | Systems Universe</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a237e;
+      --primary-light: #3949ab;
+      --accent: #4ade80;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #1a237e, #3949ab);
+      color: white;
+      padding: 32px 0;
+    }
+    .page-header .back-link {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 16px;
+      transition: color 0.2s;
+    }
+    .page-header .back-link:hover { color: white; }
+    .page-header h1 { font-weight: 800; font-size: 2rem; }
+    .page-header .version-tag {
+      background: rgba(255,255,255,0.15);
+      padding: 3px 12px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      margin-left: 12px;
+      vertical-align: middle;
+    }
+
+    .container-main { max-width: 960px; margin: 0 auto; padding: 32px 16px; }
+
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    .info-card h3 { font-weight: 700; margin-bottom: 16px; }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .feature-list li {
+      padding: 12px 16px;
+      background: var(--bg);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .feature-list li i { color: var(--accent); }
+
+    .demo-links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-demo {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-demo:hover { background: var(--primary-light); color: white; }
+
+    .tech-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tech-tag {
+      background: rgba(26,35,126,0.08);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+
+    footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      padding: 20px;
+      font-size: 0.85rem;
+    }
+    footer a { color: rgba(255,255,255,0.9); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="container-main">
+    <a href="../index.html" class="back-link">
+      <i class="fa-solid fa-arrow-left"></i> Quay lại Systems Universe
+    </a>
+    <h1>
+      <i class="fa-solid fa-store"></i> MiniPOS
+      <span class="version-tag">v1.0 Production</span>
+    </h1>
+  </div>
+</div>
+
+<div class="container-main">
+
+  <!-- Overview -->
+  <div class="info-card">
+    <h3>📋 Tổng quan</h3>
+    <p class="text-muted">
+      MiniPOS là hệ thống quản lý bán hàng đơn giản và trực quan, được thiết kế dành riêng
+      cho cửa hàng nhỏ, hộ kinh doanh cá thể và các shop bán lẻ tại Việt Nam.
+      Giao diện thuần Việt, dễ sử dụng, không cần đào tạo phức tạp.
+    </p>
+  </div>
+
+  <!-- Features -->
+  <div class="info-card">
+    <h3>✨ Tính năng chính</h3>
+    <ul class="feature-list">
+      <li><i class="fa-solid fa-check-circle"></i> Quản lý sản phẩm & danh mục</li>
+      <li><i class="fa-solid fa-check-circle"></i> Tạo & quản lý đơn hàng</li>
+      <li><i class="fa-solid fa-check-circle"></i> Quản lý khách hàng</li>
+      <li><i class="fa-solid fa-check-circle"></i> Báo cáo doanh thu theo ngày/tháng</li>
+      <li><i class="fa-solid fa-check-circle"></i> Hỗ trợ đa cửa hàng</li>
+      <li><i class="fa-solid fa-check-circle"></i> Quét mã vạch sản phẩm</li>
+      <li><i class="fa-solid fa-check-circle"></i> Lịch sử giao dịch</li>
+      <li><i class="fa-solid fa-check-circle"></i> Dashboard KPI trực quan</li>
+      <li><i class="fa-solid fa-check-circle"></i> Nhập/xuất dữ liệu Excel</li>
+      <li><i class="fa-solid fa-check-circle"></i> Giao diện responsive — mobile & desktop</li>
+    </ul>
+  </div>
+
+  <!-- Tech stack -->
+  <div class="info-card">
+    <h3>🛠 Công nghệ sử dụng</h3>
+    <div class="tech-tags">
+      <span class="tech-tag">HTML5</span>
+      <span class="tech-tag">CSS3</span>
+      <span class="tech-tag">JavaScript (Vanilla)</span>
+      <span class="tech-tag">Bootstrap 5.3</span>
+      <span class="tech-tag">Font Awesome 6</span>
+      <span class="tech-tag">LocalStorage</span>
+      <span class="tech-tag">Google Apps Script</span>
+    </div>
+  </div>
+
+  <!-- Demo link -->
+  <div class="info-card">
+    <h3>🚀 Trải nghiệm Demo</h3>
+    <p class="text-muted mb-3">
+      Bản demo đầy đủ chức năng. Dữ liệu được lưu cục bộ trên trình duyệt để bạn
+      có thể trải nghiệm toàn bộ quy trình bán hàng.
+    </p>
+    <div class="demo-links">
+      <a href="../../production/index.html" class="btn-demo" target="_blank">
+        <i class="fa-solid fa-play"></i> Mở Demo MiniPOS
+      </a>
+      <a href="../index.html" class="btn btn-outline-primary">
+        <i class="fa-solid fa-arrow-left"></i> Về Hub
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a href="../index.html">Systems Universe</a> · Product Detail · © 2025 Ninh Quang Thanh
+</footer>
+
+</body>
+</html>

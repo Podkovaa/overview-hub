@@ -1,274 +1,217 @@
-# Google Stitch Prompt — MiniPOS UI Redesign
+# Google Stitch Prompts — MiniPOS Full UI
 
-> Copy toàn bộ nội dung dưới đây, paste vào Google Stitch để generate UI.
-
----
-
-## Project Context
-
-Design a professional Point-of-Sale (POS) web application for small businesses in Vietnam. The app is called **MiniPOS** and is part of the **Systems Universe** ecosystem.
-
-**Tech constraints:**
-- Single HTML file (no React/Vue framework)
-- Tailwind CSS for styling
-- Google Material Symbols for icons
-- Inter font for UI, JetBrains Mono for data/metrics
-- Mobile-first responsive design (used on phones, tablets, and desktop)
-- Dark sidebar + light content area layout
-
-**Brand identity:** Technical, trustworthy, modern. Part of the "Systems Universe" family — use the same design DNA.
+> **Cách dùng:** Copy từng prompt bên dưới, paste vào Google Stitch. Mỗi prompt = 1 màn hình.
+> Generate xong màn hình nào → chụp lại → qua prompt tiếp theo.
 
 ---
 
-## Design System Tokens
+## Design System (dùng chung cho tất cả prompt)
 
-### Colors (Material Design 3 tonal palette)
-
-```
-Primary:        #000613 (near black — headers, sidebar, primary buttons)
-On-primary:     #ffffff
-Secondary:      #005eb2 (blue — links, active states, highlights)
-Secondary-container: #4597fe (light blue — badges, indicators)
-Primary-container:   #001f3f (dark navy — cards, code blocks)
-Surface:        #f9f9f9 (page background)
-Surface-container-lowest: #ffffff (card backgrounds)
-Surface-container:       #eeeeee (hover states, disabled)
-Outline-variant: #c4c6cf (borders, dividers)
-Success:        #10b981 (green — positive KPIs, payment confirmations)
-Warning:        #f59e0b (amber — low stock alerts)
-Error:          #ba1a1a (red — errors, out-of-stock)
-On-surface:     #1a1c1c (primary text)
-On-surface-variant: #43474e (secondary text/muted)
-```
-
-### Typography
+Copy đoạn này vào đầu MỖI prompt:
 
 ```
-Headlines:  Inter, weight 600-700, uppercase for section titles
-Body:       Inter, weight 400, 14px base
-Data/KPI:   Inter, weight 800, large sizes for numbers
-Code:       JetBrains Mono, weight 400-500, for product codes and metrics
-Icons:      Material Symbols Outlined, weight 400, 24px default
-```
+Design a professional Point-of-Sale web app UI using Tailwind CSS.
 
-### Spacing
-- Base unit: 4px
-- Card padding: 16-20px
-- Section gap: 16px
-- Sidebar width: 220px desktop, hidden with overlay on mobile
+DESIGN TOKENS:
+- Primary bg: #000613 (near black), Secondary: #005eb2 (blue)
+- Surface bg: #f9f9f9, Cards: #ffffff
+- Success: #10b981, Warning: #f59e0b, Error: #ba1a1a
+- Text primary: #1a1c1c, Text muted: #43474e
+- Borders: #c4c6cf, subtle 1px
+- Font: Inter for UI, JetBrains Mono for code/metrics
+- Icons: Material Symbols Outlined style
+- Border radius: 12px for cards, 8px for buttons
+
+LAYOUT: Fixed left sidebar (220px, bg #000613, white text, nav items with icons), top bar with page title + user avatar, main content area with light bg + subtle dot pattern.
+
+This app is part of the "Systems Universe" ecosystem — professional, modern, technical aesthetic.
+```
 
 ---
 
-## Screens to Design
+## Prompt 1: Main App Layout + Dashboard
 
-### 1. Login Page
-**Purpose:** Simple authentication screen.
-- Centered card (max 400px) on gradient background
-- Gradient: 135° from primary (#000613) to secondary (#005eb2)
-- App logo/icon at top (storefront icon)
-- Title: "MiniPOS" + subtitle: "Point of Sale System"
-- Email input with icon
-- Password input with icon
-- Full-width primary button: "Sign In"
-- Hint text below: "Default: admin@minipos.com / admin123"
-- Clean, minimal, professional — no clutter
+```
+Design the main Dashboard screen of a POS app called "MiniPOS".
 
-### 2. Main Layout (after login)
-**Purpose:** App shell with sidebar navigation + main content area.
+Show the FULL layout:
+- LEFT SIDEBAR (220px, dark bg #000613): Brand "🏪 MiniPOS" at top, then 9 nav items with icons: Dashboard (active, green left border), Point of Sale, Orders, Products, Stock In, Expenses, Customers, Reports, Settings. Logout at bottom.
+- TOP BAR: Title "Dashboard" left, store name "🏪 My Store" center, user avatar "A" + "Admin" right.
+- MAIN CONTENT (light bg):
 
-**Sidebar (left, 220px, dark bg: #000613):**
-- Brand area: Store icon + "MiniPOS" + store name + version badge
-- Nav items with icons (left-aligned, 12px padding):
-  - 📊 Dashboard
-  - 🛒 Point of Sale
-  - 📋 Orders
-  - 📦 Products
-  - 🚚 Stock In
-  - 💰 Expenses
-  - 👥 Customers
-  - 📈 Reports
-  - ⚙️ Settings
-- Active item: subtle left border accent (#10b981 green), lighter bg
-- Logout button at bottom
-- On mobile: sidebar hidden by default, hamburger toggle, overlay when open
+Row 1 — 4 KPI Cards (equal width):
+  Card 1: 💰 icon green circle, "Today's Revenue", "12.450.000đ", "+12.5% vs yesterday" green
+  Card 2: 📅 icon blue circle, "Monthly Revenue", "187.200.000đ", "48 orders"
+  Card 3: 💎 icon amber circle, "Today's Profit", "4.180.000đ", "+8.3%" green
+  Card 4: 🏦 icon indigo circle, "Monthly Profit", "52.400.000đ"
 
-**Top Bar (above content area):**
-- Page title (left)
-- Store selector (center)
-- User avatar + name (right)
-- Mobile: hamburger menu button
+Row 2 — Two columns (2/3 + 1/3):
+  Left: "Recent Orders" table — columns: #, Customer, Time, Payment, Value. 5 rows of sample data. Payment method shown as colored badge (Cash=green badge, Transfer=blue, MoMo=pink).
+  Right: "Alerts" card — Total Products: 156, Low Stock: 3 (red), Today's Orders: 12
 
-**Main Content:**
-- Background: #f9f9f9 with subtle dot pattern (like Hub)
-- All pages rendered here via SPA-style navigation
+Make it look like a real working dashboard with realistic Vietnamese Dong currency values. Show the full page, not cropped.
+```
 
-### 3. Dashboard
-**Purpose:** At-a-glance business health.
+---
 
-**4 KPI Cards (top row, 2x2 on mobile, 4 columns on desktop):**
-- Today's Revenue (with % change vs yesterday, green up / red down arrow)
-- Monthly Revenue (with order count)
-- Today's Profit (after COGS + expenses)
-- Monthly Profit (accumulated)
-- Each card: icon (colored circle, top-left) + value (large, bold) + label + trend indicator
+## Prompt 2: Point of Sale (POS)
 
-**Recent Orders (left 2/3):**
-- Table: Order #, Customer, Time, Payment Method (colored badge), Value
-- Hover highlight rows
-- Empty state: icon + "No orders yet"
+```
+Design the Point of Sale screen of MiniPOS.
 
-**Alerts Panel (right 1/3):**
-- Total Products count
-- Low Stock count (red highlight)
-- Today's Orders count
+Same sidebar + top bar layout as before, but top bar title is "Point of Sale" with a cart badge showing "3 SP".
 
-### 4. Point of Sale (POS)
-**Purpose:** The main selling interface. Split layout.
+Main content is split 60/40:
 
-**Left panel (60%):**
-- Search bar with icon (search by name, SKU, or barcode) — autofocus
-- Product grid: responsive cards (min 120px), each showing:
-  - Product name (bold)
-  - Selling price (red, bold)
-  - Stock quantity (small, muted)
-  - Visual states: normal (white), low stock (yellow border/background), out of stock (red border, 50% opacity, click disabled)
-  - Click to add to cart
-  - Active press: scale down animation
+LEFT (60%):
+- Search bar with magnifying glass icon, placeholder "Search product (name, SKU, barcode)..."
+- Product grid: 4 columns of product cards. Show 8 products:
+  - Each card: product name bold, price in red bold, "Stock: X" small muted text
+  - Mix of states: some normal (white bg, blue border on hover), 1 yellow (low stock, yellow border/background), 1 red/greyed out (out of stock, opacity 0.5)
+  - Examples: "Cà phê sữa đá" 35.000đ, "Trà đào" 45.000đ, "Bánh mì thịt" 20.000đ, "Nước suối" 10.000đ, etc.
 
-**Right panel (40%, sticky):**
-- Cart header: "Cart" + item count badge + clear button
-- Cart items list (scrollable, max 40vh):
-  - Product name + unit price × quantity
-  - Qty adjuster: − and + circular buttons
-  - Line total (right-aligned, bold)
-  - Remove button (×)
+RIGHT (40%, sticky card):
+- Cart header: "🛒 Cart" + "3 items" + trash icon
+- 3 cart items:
+  - "Cà phê sữa đá" — 35.000đ × 2 — [−] [2] [+] — 70.000đ — ×
+  - "Trà đào" — 45.000đ × 1 — [−] [1] [+] — 45.000đ — ×
+  - "Bánh mì thịt" — 20.000đ × 1 — [−] [1] [+] — 20.000đ — ×
 - Cart footer:
-  - Subtotal
-  - Discount input (number, right-aligned)
-  - **TOTAL** (large, red, bold)
-  - Payment method selector: Cash | Bank Transfer | MoMo (grid of 3, selected has blue border + light blue bg)
-  - Checkout button (full width, green, large, with checkmark icon)
+  - Subtotal: 135.000đ
+  - Discount: [0] input
+  - TOTAL: 135.000đ (large, red, bold)
+  - Payment methods: 3 buttons in a row — "💵 Cash" (selected, blue border), "🏦 Transfer", "📱 MoMo"
+  - Green checkout button: "✓ Checkout" full width, large
 
-**On mobile:** Product grid full width on top, cart slides up or is below. Bottom nav for quick page switching.
-
-### 5. Orders
-**Purpose:** View and filter order history.
-
-- Top bar: title + date picker (default: today)
-- Table: Order #, Customer, Time, Value, Payment Method (colored badge), View button
-- Click "View" → modal showing order detail:
-  - Order #, date, customer info
-  - Line items table: product, qty, price, total
-  - Payment method + total at bottom
-- Empty state: receipt icon + "No orders for this date"
-
-### 6. Products
-**Purpose:** Manage product catalog.
-
-- Top bar: "Products (N)" + search input + "Add Product" button (primary)
-- Table: Name, SKU, Category, Purchase Price, Selling Price (red bold), Stock, Actions (Edit + Delete)
-- Edit/Delete buttons: outline style, small
-- Search filters in real-time
-- Add/Edit: modal form with fields:
-  - Name* | SKU | Category
-  - Purchase Price | Selling Price*
-  - Unit | Barcode
-- Delete: confirm dialog
-
-### 7. Stock In
-**Purpose:** Record inventory intake.
-
-- Top section: "New Stock In"
-  - Dynamic rows: Product dropdown (select from catalog) + Qty + Purchase Price + Total (auto-calc)
-  - "Add Row" button to add more lines
-  - Supplier input
-  - Notes input
-  - Submit button: "Confirm Stock In"
-- Bottom section: "Stock In History"
-  - Table: Time, Product, Qty, Price, Total, Supplier
-
-### 8. Expenses
-**Purpose:** Track business costs.
-
-- Top bar: "Expenses" + "Add Expense" button
-- Table: Date, Category, Amount (red), Note
-- Add modal: Category dropdown (Rent/Utilities/Payroll/Shipping/Marketing/Other), Amount*, Note
-- Empty state: money icon + "No expenses recorded"
-
-### 9. Customers
-**Purpose:** Simple CRM.
-
-- Top bar: "Customers (N)" + "Add Customer" button
-- Table: Name, Phone, Address, Date Added
-- Add modal: Name*, Phone, Address
-- Future: total purchases, last visit
-
-### 10. Reports
-**Purpose:** Data visualization.
-
-- 4 KPI cards on top (same style as Dashboard)
-- Revenue bar chart (Chart.js): daily revenue, blue bars, rounded corners
-- Below: Payment method breakdown summary
-
-### 11. Settings
-**Purpose:** Configure store.
-
-- Form fields:
-  - Store Name
-  - Store Phone
-  - Store Address
-  - Low Stock Alert Threshold (number input)
-- Save button
-- Demo Data section (separated):
-  - Description: "Generate 15 sample products and 7 days of order data for testing"
-  - Button: "Generate Demo Data" (outline warning style)
+Show the full split layout. Make it look functional and ready to use.
+```
 
 ---
 
-## Mobile Design Notes
+## Prompt 3: Orders
 
-- Sidebar becomes hamburger menu + overlay
-- Bottom navigation bar (5 main items: Dashboard, POS, Orders, Products, Reports) — fixed, white background, top border
-- Product grid: 2-3 columns instead of auto-fill
-- Cart on POS: full-width below products, not side panel
-- KPI cards: 2 columns
-- Tables: horizontal scroll
-- Modals: full-screen on mobile
-- Touch targets minimum 44px (iOS HIG)
+```
+Design the Orders screen of MiniPOS.
 
----
+Same sidebar + top bar. Top bar title "📋 Orders" with a date picker showing today's date on the right.
 
-## Animation & Micro-interactions
+Main content:
+- A card containing a table:
+  - Headers: #, Customer, Time, Payment, Value, Action
+  - 8 rows with realistic Vietnamese data:
+    - Order codes like "ORD-20260616-001"
+    - Customer names: "Nguyễn Văn A", "Trần Thị B", "Lê Văn C", "Khách lẻ" (walk-in)
+    - Times: various times today
+    - Payment badges: Cash (green), Transfer (blue), MoMo (pink)
+    - Values: 45.000đ, 120.000đ, 350.000đ, etc.
+    - Action: eye icon button "View"
+- Empty state hint: if no orders, show receipt icon + "No orders for this date"
 
-- Page transitions: subtle fade (150ms)
-- KPI cards: subtle hover lift (translateY -2px)
-- Product cards: active press scale (0.96)
-- Add to cart: brief success flash on cart icon
-- Payment success: green toast notification (top-right, auto-dismiss 2.5s)
-- Sidebar: smooth slide (300ms)
-- Modal: fade in + backdrop blur
-
----
-
-## Reference
-
-**Existing Hub design at:** `products/index.html` in the Systems Universe repo.
-- Use the same design tokens, color palette, typography
-- Match the "technical aesthetic" (code-like badges, blueprint background optional)
-- Keep the professional but not corporate feel
-
-**Goal:** A POS app that looks like it belongs in the Systems Universe family — cohesive, modern, professional — while being distinctly a tool (not a landing page).
+Show the full table with realistic data, colored payment badges, and the View action buttons.
+```
 
 ---
 
-## Output Format
+## Prompt 4: Products Management
 
-Generate a complete, production-ready single HTML file with:
-1. Tailwind CSS via CDN
-2. All screens/modules listed above
-3. Material Symbols icons
-4. Inter + JetBrains Mono fonts
-5. Responsive design (mobile + tablet + desktop)
-6. All JavaScript logic for navigation, cart, and CRUD operations
-7. Demo/offline mode (works without backend)
-8. Google Apps Script bridge (google.script.run) with graceful fallback
+```
+Design the Products screen of MiniPOS.
+
+Same sidebar + top bar. Top bar: "📦 Products (156)" + search input + blue "＋ Add Product" button.
+
+Main content:
+- A card containing a table with 8 rows:
+  - Headers: Name, SKU, Category, Purchase Price, Selling Price, Stock, Actions
+  - Realistic Vietnamese product data:
+    - "Cà phê sữa đá" | CF001 | Drinks | 25.000đ | 35.000đ (red bold) | 48 | ✏️ 🗑
+    - "Trà đào" | TD002 | Drinks | 30.000đ | 45.000đ | 32 | ✏️ 🗑
+    - "Bánh mì thịt" | BM003 | Food | 12.000đ | 20.000đ | 3 (yellow warning) | ✏️ 🗑
+    - "Nước suối" | NS004 | Drinks | 5.000đ | 10.000đ | 0 (red, out of stock) | ✏️ 🗑
+    - 4 more rows with varied data
+  - Edit (pencil icon) and Delete (trash icon) buttons per row, small outline style
+
+Show the complete table with all data visible. The table should look professional with alternating row hover states.
+```
+
+---
+
+## Prompt 5: Stock In + Expenses + Customers (3 smaller screens)
+
+```
+Design 3 screens of MiniPOS as separate sections in one view.
+
+SECTION 1 — Stock In:
+Top bar "🚚 Stock In".
+- "New Stock In" form: 3 rows with Product dropdown + Qty input + Price input + auto-calculated Total. "＋ Add Row" link below. Supplier text input. Notes text input. Blue "Confirm Stock In" button.
+- Below: "Stock In History" table with 5 rows showing recent stock-in records.
+
+SECTION 2 — Expenses:
+Top bar "💰 Expenses" + "＋ Add Expense" button.
+- Table: Date, Category, Amount (red), Note. 6 rows of sample data. Categories: Rent, Utilities, Payroll, Shipping, Marketing, Other.
+
+SECTION 3 — Customers:
+Top bar "👥 Customers (24)" + "＋ Add Customer" button.
+- Table: Name, Phone, Address, Date Added. 5 rows of sample Vietnamese customer data.
+
+Show all 3 sections stacked. Each with its own mini top bar and table. Make them look like real data, not placeholders.
+```
+
+---
+
+## Prompt 6: Reports
+
+```
+Design the Reports screen of MiniPOS.
+
+Same sidebar + top bar. Top bar title "📈 Reports".
+
+Main content:
+Row 1 — 4 KPI cards (same style as Dashboard):
+  - Total Revenue: 187.200.000đ
+  - Total Orders: 486
+  - Average/Order: 385.000đ
+  - Cash Payments: 98.500.000đ
+
+Row 2 — Full-width card:
+  - Title: "Revenue by Day"
+  - A bar chart showing 7 days of revenue:
+    - Mon: 28.5M, Tue: 32.1M, Wed: 24.8M, Thu: 35.2M, Fri: 42.0M, Sat: 38.7M, Sun: 15.9M
+    - Blue bars (#3949ab), rounded tops, no legend needed
+    - Y-axis: VND amounts in millions
+    - Clean, modern chart style
+
+Show the complete page with KPI cards above the chart. The chart should look like a real Chart.js bar chart.
+```
+
+---
+
+## Prompt 7: Settings
+
+```
+Design the Settings screen of MiniPOS.
+
+Same sidebar + top bar. Top bar title "⚙️ Settings".
+
+Main content — a card form:
+- Store Name: [MiniPOS] text input
+- Store Phone: [0900000000] text input
+- Store Address: [123 Nguyễn Huệ, Q.1, TP.HCM] text input
+- Low Stock Alert: [5] number input (small width)
+- Blue "💾 Save Settings" button
+
+Below, a separated section:
+- Title: "🪄 Demo Data"
+- Description: "Generate 15 sample products and 7 days of order data for testing purposes."
+- Orange/amber outline button: "✨ Generate Demo Data"
+
+Show the full settings page with both sections clearly separated.
+```
+
+---
+
+## Notes
+
+- **Generate từng prompt một.** Mỗi prompt paste vào Stitch → xem kết quả → chụp màn hình → prompt tiếp theo.
+- **Nếu Stitch chỉ cho ra 1 phần**, thêm câu: "Show the FULL page, all elements visible, not cropped."
+- **Nếu màu sai**, nhắc lại design tokens.
+- **Không generate login screen** — app bắt đầu từ màn hình chính luôn.

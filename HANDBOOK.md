@@ -14,6 +14,11 @@
 - [Chapter 4: Backend & Database Layer](#chapter-4-backend--database-layer)
 - [Chapter 5: Design & UX Layer](#chapter-5-design--ux-layer)
 - [Chapter 6: CI/CD Pipeline](#chapter-6-cicd-pipeline)
+  - [6.5 The Deep Link Problem](#65-the-deep-link-problem-critical)
+  - [6.6 URL Management Architecture](#66-url-management-architecture)
+  - [6.7 Relay Script](#67-relay-script-gas-url-shortening-bridge)
+  - [6.8 Dub.co Short Link Setup](#68-dubco-short-link-setup)
+  - [6.9 URL Strategy by Product Type](#69-url-strategy-by-product-type)
 - [Chapter 7: Product Registry](#chapter-7-product-registry)
 - [Chapter 8: Operations & Monitoring](#chapter-8-operations--monitoring)
 - [Chapter 9: Lessons Learned](#chapter-9-lessons-learned)
@@ -334,7 +339,155 @@ Before each production deployment:
 2. GAS: **Deploy → Manage Deployments →** select previous version → **Activate**
 3. No downtime — GAS switches versions instantly
 
-### 6.5 Versioning Convention
+### 6.5 The Deep Link Problem (Critical)
+
+**The problem:** Every time you deploy a new version in GAS, the old deployment is deactivated and a **new URL is generated**. If you've already shared the previous URL with customers, that link stops working — users get a 404 or "Script not found" error.
+
+```
+Deploy v1 → URL_A  (shared with customers)
+Deploy v2 → URL_B  (new URL, URL_A is dead)
+          ❌ Customers using URL_A cannot access the app
+```
+
+**The solution:** A **URL Shortening Relay** — an intermediate GAS Script that:
+1. Maintains a stable, persistent URL (never re-deployed)
+2. Redirects to the latest active deploy URL
+3. The shortened link is what you share with customers — it never changes
+
+### 6.6 URL Management Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              SHARED WITH CUSTOMERS                       │
+│                                                          │
+│   https://dub.sh/systems-universe                       │
+│           │                                              │
+│           ▼                                              │
+│   https://by.com.vn/xxxxx   ← shortened (2nd layer)     │
+│           │                                              │
+│           ▼                                              │
+│   https://script.google.com/macros/s/{ID}/exec           │
+│   ↑ This is the Relay Script — its URL never changes     │
+│           │                                              │
+│           ▼ (redirects to)                               │
+│   https://script.google.com/macros/s/{LATEST_ID}/exec    │
+│   ↑ Actual Hub — redeployed freely, URL changes          │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Why two layers of shortening?**
+
+| Layer | Service | Purpose |
+|-------|---------|---------|
+| **Inner** | `by.com.vn` | Shortens the raw GAS URL. GAS URLs are long and look suspicious to some services. |
+| **Outer** | `dub.co` | Professional branded short link (`dub.sh/systems-universe`). Dub.co may flag raw GAS URLs as unsafe — the by.com.vn layer sanitizes this. |
+
+### 6.7 Relay Script (GAS URL Shortening Bridge)
+
+Create a separate GAS project that acts as the URL configuration hub. This script should **rarely (or never) be re-deployed** — its job is to store the latest active URL and redirect.
+
+```javascript
+// Code.gs — URL Relay Script
+// Project: Systems Universe — URL Relay
+// Purpose: Stable public URL that redirects to latest Hub deploy
+
+function doGet(e) {
+  // Read the current active URL from Script Properties
+  var targetUrl = PropertiesService.getScriptProperties().getProperty('ACTIVE_HUB_URL');
+  
+  if (!targetUrl) {
+    return HtmlService.createHtmlOutput('<h1>Hub URL not configured</h1>');
+  }
+  
+  // Redirect to the actual Hub
+  return HtmlService.createHtmlOutput(
+    '<html><script>window.location.href="' + targetUrl + '"</script></html>'
+  );
+}
+
+// Admin function — call once after each new Hub deploy
+function updateTargetUrl(newUrl) {
+  PropertiesService.getScriptProperties().setProperty('ACTIVE_HUB_URL', newUrl);
+  Logger.log('Hub URL updated to: ' + newUrl);
+  return 'Updated to: ' + newUrl;
+}
+
+// Admin function — check current active URL
+function getCurrentUrl() {
+  return PropertiesService.getScriptProperties().getProperty('ACTIVE_HUB_URL') || 'Not set';
+}
+```
+
+**Workflow after each Hub deploy:**
+
+1. Deploy Hub → get new URL
+2. Open Relay Script in GAS Editor
+3. Run `updateTargetUrl('https://script.google.com/macros/s/NEW_ID/exec')`
+4. Done — `dub.sh/systems-universe` now points to the new Hub version
+
+### 6.8 Dub.co Short Link Setup
+
+Create the branded short link using Dub.co's API:
+
+```javascript
+function createDubShortLink() {
+  // 1. Configuration
+  var apiKey = "PASTE_YOUR_DUB_API_KEY_HERE";     // Get from dub.co → Settings → API
+  var longUrl = "https://script.google.com/macros/s/RELAY_SCRIPT_ID/exec"; // Relay Script URL
+  var slugKey = "systems-universe";               // Result: dub.sh/systems-universe
+  // var domain = "thanhnq.dev";                  // Uncomment if you buy a custom domain on Dub
+  
+  // 2. Dub.co API endpoint
+  var apiUrl = "https://api.dub.co/links";
+  
+  // 3. Payload
+  var payload = {
+    "url": longUrl,
+    "key": slugKey
+  };
+  
+  // 4. Request config
+  var options = {
+    "method": "post",
+    "contentType": "application/json",
+    "headers": {
+      "Authorization": "Bearer " + apiKey
+    },
+    "payload": JSON.stringify(payload),
+    "muteHttpExceptions": true
+  };
+  
+  // 5. Execute
+  try {
+    var response = UrlFetchApp.fetch(apiUrl, options);
+    var json = JSON.parse(response.getContentText());
+    
+    if (response.getResponseCode() == 200 || response.getResponseCode() == 201) {
+      Logger.log("Short link created: " + json.shortLink);
+      // Result: dub.sh/systems-universe
+    } else {
+      Logger.log("Error: " + response.getContentText());
+    }
+  } catch(e) {
+    Logger.log("Connection error: " + e.toString());
+  }
+}
+```
+
+### 6.9 URL Strategy by Product Type
+
+| Product Type | URL Strategy | Example |
+|-------------|-------------|---------|
+| **Hub / Landing Page** | Relay Script + Dub short link | `dub.sh/systems-universe` |
+| **Customer-facing products** (MiniPOS, CoffeePOS...) | Direct GAS deeplink embedded as widget link in Hub | `https://script.google.com/macros/s/{ID}/exec` |
+| **Future enterprise products** | Relay Script + Dub short link (when stable URL is critical) | `dub.sh/minipos` |
+
+**Policy:**
+- **Hub** uses the Relay Script + Dub short link because its URL is shared broadly (LinkedIn, email, QR codes) and must never break.
+- **Individual products** (MiniPOS, etc.) use direct GAS URLs embedded in the Hub's product card buttons. When a product is redeployed, only the Hub's `Index.html` link needs updating (then redeploy Hub). This is acceptable because the Hub is the single entry point.
+- **If a product later needs a standalone stable URL** (e.g., for direct customer access without going through the Hub), use the same Relay + Dub pattern.
+
+### 6.10 Versioning Convention
 
 ```
 v{major}.{minor}.{patch}

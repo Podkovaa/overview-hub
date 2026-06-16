@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MiniPOS — Point of Sale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap" rel="stylesheet">
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -520,7 +522,14 @@ async function setupDemo() {
 }
 
 // ======================== INIT ========================
-window.addEventListener('load', () => { navigate('dashboard'); });
+window.addEventListener('load', () => {
+  // Ensure Material Symbols font is loaded before rendering
+  document.fonts.load('24px Material Symbols Outlined').then(() => {
+    navigate('dashboard');
+  }).catch(() => {
+    navigate('dashboard'); // fallback if font fails
+  });
+});
 </script>
 <style>
 .material-symbols-outlined {

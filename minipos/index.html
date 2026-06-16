@@ -41,22 +41,28 @@
     }
   </script>
   <style>
-    span.material-symbols-outlined, .material-symbols-outlined {
+    .material-symbols-outlined {
       font-family: 'Material Symbols Outlined' !important;
       font-weight: normal !important;
       font-style: normal;
       font-size: 24px;
       line-height: 1;
       letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
+      text-transform: none !important;
+      display: inline-block !important;
       white-space: nowrap;
       word-wrap: normal;
       direction: ltr;
+      font-feature-settings: 'liga';
       -webkit-font-feature-settings: 'liga';
+      -moz-font-feature-settings: 'liga';
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
+    .sidebar .material-symbols-outlined { font-size: 18px; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20; }
+    .sidebar .nav-item .icon.material-symbols-outlined { font-size: 18px; width: 20px; }
     .sidebar {
       width: 190px; min-width: 190px; background: #000613; color: white;
       min-height: 100vh;
@@ -600,6 +606,14 @@ async function setupDemo() {
 
 // ======================== INIT ========================
 window.addEventListener('load', () => { navigate('dashboard'); });
+</script>
+<script>
+// Force icon rendering after Tailwind loads
+setTimeout(() => {
+  document.querySelectorAll('.material-symbols-outlined').forEach(el => {
+    el.style.display = 'inline-block';
+  });
+}, 500);
 </script>
 </body>
 </html>

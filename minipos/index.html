@@ -43,19 +43,20 @@
   <style>
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     .sidebar {
-      width: 220px; background: #000613; color: white;
+      width: 190px; background: #000613; color: white;
       position: fixed; top: 0; left: 0; height: 100vh; z-index: 60;
       transition: transform 0.3s; overflow-y: auto;
     }
     .sidebar .nav-item {
-      color: rgba(255,255,255,0.7); padding: 10px 16px;
+      color: rgba(255,255,255,0.7); padding: 8px 14px;
       border-left: 3px solid transparent; transition: all 0.15s;
-      font-size: 0.85rem; display: flex; align-items: center; gap: 10px;
+      font-size: 0.8rem; display: flex; align-items: center; gap: 8px;
       cursor: pointer; text-decoration: none;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .sidebar .nav-item:hover { color: white; background: rgba(255,255,255,0.06); }
     .sidebar .nav-item.active { color: white; background: rgba(255,255,255,0.1); border-left-color: #10b981; }
-    .sidebar .nav-item .icon { width: 20px; text-align: center; font-size: 1.1rem; }
+    .sidebar .nav-item .icon { width: 18px; text-align: center; font-size: 1rem; flex-shrink: 0; }
     .kpi-card {
       background: white; border-radius: 12px; padding: 16px;
       border: 1px solid #e2e8f0; transition: transform 0.15s;
@@ -112,7 +113,7 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
-    <div class="px-4 py-5 border-b border-white/10">
+    <div class="px-3 py-4 border-b border-white/10">
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-2xl">store</span>
         <div>
@@ -140,7 +141,7 @@
   </aside>
 
   <!-- MAIN CONTENT -->
-  <div class="main-content min-h-screen" style="margin-left:220px;" id="mainContent"></div>
+  <div class="main-content min-h-screen" style="margin-left:190px;" id="mainContent"></div>
 
   <!-- MOBILE BOTTOM NAV -->
   <nav class="hidden fixed bottom-0 left-0 right-0 bg-white border-t border-outline-variant z-40 justify-around py-1.5 max-md:flex" id="mobileNav">

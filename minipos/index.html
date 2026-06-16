@@ -6,7 +6,7 @@
   <title>MiniPOS — Point of Sale</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet">
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -41,12 +41,14 @@
     }
   </script>
   <style>
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; -webkit-font-feature-settings: 'liga'; -webkit-font-smoothing: antialiased; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     .sidebar {
       width: 190px; background: #000613; color: white;
       position: fixed; top: 0; left: 0; height: 100vh; z-index: 60;
       transition: transform 0.3s; overflow-y: auto;
+      display: flex; flex-direction: column;
     }
+    .sidebar nav { flex: 1; }
     .sidebar .nav-item {
       color: rgba(255,255,255,0.7); padding: 8px 14px;
       border-left: 3px solid transparent; transition: all 0.15s;
@@ -103,7 +105,7 @@
     }
   </style>
 </head>
-<body class="bg-surface text-on-surface font-sans">
+<body class="bg-surface text-on-surface font-sans w-full overflow-x-hidden">
 
 <!-- ===== APP SHELL ===== -->
 <div id="appShell">
@@ -133,7 +135,7 @@
       <a class="nav-item" onclick="navigate('reports')" data-page="reports"><span class="material-symbols-outlined icon">bar_chart</span> Reports</a>
       <a class="nav-item" onclick="navigate('settings')" data-page="settings"><span class="material-symbols-outlined icon">settings</span> Settings</a>
     </nav>
-    <div class="absolute bottom-4 left-4 right-4">
+    <div class="px-3 pb-4 mt-auto">
       <button onclick="logout()" class="w-full border border-white/20 text-white/60 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-2">
         <span class="material-symbols-outlined text-sm">logout</span> Sign Out
       </button>
@@ -141,7 +143,7 @@
   </aside>
 
   <!-- MAIN CONTENT -->
-  <div class="main-content min-h-screen" style="margin-left:190px;" id="mainContent"></div>
+  <div class="main-content min-h-screen" style="margin-left:190px;width:calc(100% - 190px);" id="mainContent"></div>
 
   <!-- MOBILE BOTTOM NAV -->
   <nav class="hidden fixed bottom-0 left-0 right-0 bg-white border-t border-outline-variant z-40 justify-around py-1.5 max-md:flex" id="mobileNav">

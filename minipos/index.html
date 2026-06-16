@@ -40,91 +40,6 @@
       }
     }
   </script>
-  <style>
-    .material-symbols-outlined {
-      font-family: 'Material Symbols Outlined' !important;
-      font-weight: normal !important;
-      font-style: normal;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none !important;
-      display: inline-block !important;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      font-feature-settings: 'liga';
-      -webkit-font-feature-settings: 'liga';
-      -moz-font-feature-settings: 'liga';
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    .sidebar .material-symbols-outlined { font-size: 18px; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20; }
-    .sidebar .nav-item .icon.material-symbols-outlined { font-size: 18px; width: 20px; }
-    .sidebar {
-      width: 190px; min-width: 190px; background: #000613; color: white;
-      min-height: 100vh;
-      transition: transform 0.3s;
-      display: flex; flex-direction: column;
-    }
-    .sidebar nav { flex: 1; overflow-y: auto; }
-    .sidebar .nav-item {
-      color: rgba(255,255,255,0.7); padding: 8px 14px;
-      border-left: 3px solid transparent; transition: all 0.15s;
-      font-size: 0.8rem; display: flex; align-items: center; gap: 8px;
-      cursor: pointer; text-decoration: none;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .sidebar .nav-item:hover { color: white; background: rgba(255,255,255,0.06); }
-    .sidebar .nav-item.active { color: white; background: rgba(255,255,255,0.1); border-left-color: #10b981; }
-    .sidebar .nav-item .icon { width: 18px; text-align: center; font-size: 1rem; flex-shrink: 0; }
-    .kpi-card {
-      background: white; border-radius: 12px; padding: 16px;
-      border: 1px solid #e2e8f0; transition: transform 0.15s;
-    }
-    .kpi-card:hover { transform: translateY(-1px); }
-    .product-card {
-      background: white; border: 2px solid #e2e8f0; border-radius: 10px;
-      padding: 12px; cursor: pointer; text-align: center;
-      transition: all 0.12s; user-select: none;
-    }
-    .product-card:hover { border-color: #005eb2; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .product-card:active { transform: scale(0.97); }
-    .product-card.low-stock { border-color: #fcd34d; background: #fffbeb; }
-    .product-card.out-stock { border-color: #fecaca; background: #fef2f2; opacity: 0.65; pointer-events: none; }
-    .btn-qty {
-      width: 26px; height: 26px; border-radius: 50%;
-      border: 2px solid #e2e8f0; background: white;
-      font-weight: 700; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; transition: all 0.1s;
-    }
-    .btn-qty:hover { background: #f1f5f9; }
-    .payment-btn {
-      padding: 10px 6px; border: 2px solid #e2e8f0; border-radius: 10px;
-      background: white; cursor: pointer; text-align: center;
-      font-weight: 600; font-size: 0.8rem; transition: all 0.15s;
-    }
-    .payment-btn:hover { border-color: #005eb2; }
-    .payment-btn.selected { border-color: #005eb2; background: #eff6ff; color: #005eb2; }
-    .toast {
-      position: fixed; top: 16px; right: 16px;
-      padding: 12px 20px; border-radius: 10px;
-      font-weight: 600; z-index: 99999;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transition: opacity 0.3s;
-    }
-    @keyframes slide-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-    .animate-in { animation: slide-in 0.2s ease-out; }
-    @media (max-width: 768px) {
-      .sidebar { position: fixed; top: 0; left: 0; height: 100vh; z-index: 60; transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .main-content { padding-bottom: 80px; }
-      .product-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important; }
-    }
-  </style>
 </head>
 <body class="bg-surface text-on-surface font-sans">
 
@@ -607,13 +522,87 @@ async function setupDemo() {
 // ======================== INIT ========================
 window.addEventListener('load', () => { navigate('dashboard'); });
 </script>
-<script>
-// Force icon rendering after Tailwind loads
-setTimeout(() => {
-  document.querySelectorAll('.material-symbols-outlined').forEach(el => {
-    el.style.display = 'inline-block';
-  });
-}, 500);
-</script>
+<style>
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none !important;
+  display: inline-block !important;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.sidebar .material-symbols-outlined { font-size: 18px; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20; }
+.sidebar .nav-item .icon.material-symbols-outlined { font-size: 18px; width: 20px; }
+.sidebar {
+  width: 190px; min-width: 190px; background: #000613; color: white;
+  min-height: 100vh;
+  transition: transform 0.3s;
+  display: flex; flex-direction: column;
+}
+.sidebar nav { flex: 1; overflow-y: auto; }
+.sidebar .nav-item {
+  color: rgba(255,255,255,0.7); padding: 8px 14px;
+  border-left: 3px solid transparent; transition: all 0.15s;
+  font-size: 0.8rem; display: flex; align-items: center; gap: 8px;
+  cursor: pointer; text-decoration: none;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sidebar .nav-item:hover { color: white; background: rgba(255,255,255,0.06); }
+.sidebar .nav-item.active { color: white; background: rgba(255,255,255,0.1); border-left-color: #10b981; }
+.sidebar .nav-item .icon { width: 18px; text-align: center; font-size: 1rem; flex-shrink: 0; }
+.kpi-card {
+  background: white; border-radius: 12px; padding: 16px;
+  border: 1px solid #e2e8f0; transition: transform 0.15s;
+}
+.kpi-card:hover { transform: translateY(-1px); }
+.product-card {
+  background: white; border: 2px solid #e2e8f0; border-radius: 10px;
+  padding: 12px; cursor: pointer; text-align: center;
+  transition: all 0.12s; user-select: none;
+}
+.product-card:hover { border-color: #005eb2; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.product-card:active { transform: scale(0.97); }
+.product-card.low-stock { border-color: #fcd34d; background: #fffbeb; }
+.product-card.out-stock { border-color: #fecaca; background: #fef2f2; opacity: 0.65; pointer-events: none; }
+.btn-qty {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid #e2e8f0; background: white;
+  font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; transition: all 0.1s;
+}
+.btn-qty:hover { background: #f1f5f9; }
+.payment-btn {
+  padding: 10px 6px; border: 2px solid #e2e8f0; border-radius: 10px;
+  background: white; cursor: pointer; text-align: center;
+  font-weight: 600; font-size: 0.8rem; transition: all 0.15s;
+}
+.payment-btn:hover { border-color: #005eb2; }
+.payment-btn.selected { border-color: #005eb2; background: #eff6ff; color: #005eb2; }
+.toast {
+  position: fixed; top: 16px; right: 16px;
+  padding: 12px 20px; border-radius: 10px;
+  font-weight: 600; z-index: 99999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: opacity 0.3s;
+}
+@keyframes slide-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+.animate-in { animation: slide-in 0.2s ease-out; }
+@media (max-width: 768px) {
+  .sidebar { position: fixed; top: 0; left: 0; height: 100vh; z-index: 60; transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { padding-bottom: 80px; }
+  .product-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important; }
+}
+</style>
 </body>
 </html>

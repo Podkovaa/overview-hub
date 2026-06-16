@@ -12,6 +12,7 @@
 - [Chapter 2: Infrastructure Layer](#chapter-2-infrastructure-layer)
 - [Chapter 3: Frontend Layer](#chapter-3-frontend-layer)
 - [Chapter 4: Backend & Database Layer](#chapter-4-backend--database-layer)
+  - [4.3 Product Lifecycle & Data Flow Rule](#43-product-lifecycle--data-flow-rule)
 - [Chapter 5: Design & UX Layer](#chapter-5-design--ux-layer)
 - [Chapter 6: CI/CD Pipeline](#chapter-6-cicd-pipeline)
   - [6.5 The Deep Link Problem](#65-the-deep-link-problem-critical)
@@ -221,7 +222,65 @@ Google Sheets is used as a **live, relational database** with the following char
 **Expenses Sheet:**
 | id | date | category | amount | note | cashierName |
 
-### 4.3 GAS Backend Pattern
+### 4.3 Product Lifecycle & Data Flow Rule
+
+**Rule: Products are managed via UI → GAS Backend → Sheets. Never edit Sheets manually for product data.**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   PRODUCT LIFECYCLE                      │
+│                                                          │
+│  [Products Tab UI]                                       │
+│       │                                                  │
+│       │ Add Product / Edit / Delete                      │
+│       ▼                                                  │
+│  [Code.gs Backend]                                       │
+│       │                                                  │
+│       │ addProduct() → Sheets.appendRow()                │
+│       │ updateProduct() → Sheets.getRange().setValues()  │
+│       │ deleteProduct() → set active=false (soft delete) │
+│       ▼                                                  │
+│  [Products Sheet]                                        │
+│       │                                                  │
+│       │ Columns: id | name | sku | category |            │
+│       │          purchasePrice | sellingPrice |          │
+│       │          stock | unit | barcode | active         │
+│       │                                                  │
+│       │ ↑ Thêm sản phẩm = thêm 1 DÒNG (ROW)             │
+│       │   Không bao giờ thêm CỘT (COLUMN)               │
+│       ▼                                                  │
+│  [POS Screen] ← getProducts() ── đọc từ Products sheet   │
+│  [Dashboard]  ← getDashboardData() ── đếm totalProducts  │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Why this matters:**
+
+| Hành động | Cách làm đúng | Cách làm sai |
+|-----------|---------------|--------------|
+| Thêm sản phẩm mới | Vào Products tab → Add Product → điền form | Mở Sheets → gõ thêm dòng thủ công |
+| Sửa giá bán | Vào Products tab → Edit → sửa giá → Save | Mở Sheets → sửa ô trực tiếp |
+| Hết hàng | Tự động khi POS checkout (stock - qty) | Mở Sheets → sửa stock tay |
+| Thêm trường dữ liệu mới (vd: màu sắc) | Thêm cột vào Sheets → sửa Code.gs → sửa UI | Chỉ thêm cột Sheets (UI không hiển thị) |
+
+**Khi cần thêm trường mới (ví dụ: `color`, `size`):**
+
+```
+Step 1: Thêm cột vào Products sheet (thủ công, 1 lần)
+Step 2: Sửa Code.gs:
+        - getProducts(): thêm field mới vào object return
+        - addProduct(): nhận thêm param
+        - updateProduct(): nhận thêm param
+Step 3: Sửa UI:
+        - Product form: thêm input field mới
+        - Product grid (POS): hiển thị nếu cần
+Step 4: Dashboard tự động không bị ảnh hưởng
+        (vì Dashboard chỉ đếm COUNT và SUM các trường có sẵn)
+```
+
+> **Ghi nhớ:** Columns = schema (thay đổi 1 lần, sync 3 nơi). Rows = data (thêm/xóa hàng ngày qua UI).
+
+### 4.4 GAS Backend Pattern
 
 ```javascript
 // Code.gs — MiniPOS backend

@@ -70,7 +70,7 @@ function renderPage(filename, title) {
   try {
     const html = HtmlService.createHtmlOutputFromFile(filename)
       .setTitle(title)
-      .setFaviconUrl('https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/storefront/default/48px.svg')
+      .setFaviconUrl('https://cdn-icons-png.flaticon.com/512/1046/1046784.png')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
       .addMetaTag('viewport', 'width=device-width, initial-scale=1.0');
     return html;

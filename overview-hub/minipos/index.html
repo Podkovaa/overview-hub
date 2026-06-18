@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-surface">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -46,7 +46,7 @@
 <body class="bg-surface text-on-surface font-sans">
 
 <!-- ===== APP SHELL ===== -->
-<div id="appShell" class="flex min-h-screen">
+<div id="appShell" class="flex min-h-screen w-full">
 
   <!-- SIDEBAR OVERLAY (mobile) -->
   <div class="hidden fixed inset-0 bg-black/50 z-50" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -63,7 +63,7 @@
       </div>
     </div>
     <nav class="flex flex-col mt-2">
-      <a class="nav-item active" onclick="navigate('dashboard')" data-page="dashboard"><span class="material-symbols-outlined icon">chart_pie</span> Dashboard</a>
+      <a class="nav-item active" onclick="navigate('dashboard')" data-page="dashboard"><span class="material-symbols-outlined icon">pie_chart</span> Dashboard</a>
       <a class="nav-item" onclick="navigate('pos')" data-page="pos"><span class="material-symbols-outlined icon">point_of_sale</span> Point of Sale</a>
       <a class="nav-item" onclick="navigate('orders')" data-page="orders"><span class="material-symbols-outlined icon">receipt_long</span> Orders</a>
       <a class="nav-item" onclick="navigate('products')" data-page="products"><span class="material-symbols-outlined icon">inventory_2</span> Products</a>
@@ -81,11 +81,11 @@
   </aside>
 
   <!-- MAIN CONTENT -->
-  <div class="main-content flex-1 min-w-0" id="mainContent"></div>
+  <div class="main-content flex-1 min-w-0 p-5 w-full" id="mainContent"></div>
 
   <!-- MOBILE BOTTOM NAV -->
   <nav class="hidden fixed bottom-0 left-0 right-0 bg-white border-t border-outline-variant z-40 justify-around py-1.5 max-md:flex" id="mobileNav">
-    <a class="flex flex-col items-center gap-0.5 text-[10px] font-medium text-on-surface-variant active" onclick="navigate('dashboard')" data-mob="dashboard"><span class="material-symbols-outlined text-xl">chart_pie</span>Dashboard</a>
+    <a class="flex flex-col items-center gap-0.5 text-[10px] font-medium text-on-surface-variant active" onclick="navigate('dashboard')" data-mob="dashboard"><span class="material-symbols-outlined text-xl">pie_chart</span>Dashboard</a>
     <a class="flex flex-col items-center gap-0.5 text-[10px] font-medium text-on-surface-variant" onclick="navigate('pos')" data-mob="pos"><span class="material-symbols-outlined text-xl">point_of_sale</span>POS</a>
     <a class="flex flex-col items-center gap-0.5 text-[10px] font-medium text-on-surface-variant" onclick="navigate('orders')" data-mob="orders"><span class="material-symbols-outlined text-xl">receipt_long</span>Orders</a>
     <a class="flex flex-col items-center gap-0.5 text-[10px] font-medium text-on-surface-variant" onclick="navigate('products')" data-mob="products"><span class="material-symbols-outlined text-xl">inventory_2</span>Products</a>
@@ -191,7 +191,7 @@ async function renderDashboard() {
   const data = await callGs('getDashboardData');
   const db = data || { todayRevenue: 0, yesterdayRevenue: 0, todayOrders: 0, monthRevenue: 0, monthOrders: 0, todayProfit: 0, monthProfit: 0, totalProducts: 0, lowStock: 0, recentOrders: [] };
 
-  let html = topBarHTML('Dashboard', 'chart_pie');
+  let html = topBarHTML('Dashboard', 'pie_chart');
   html += '<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">';
   html += kpiCard('Today Revenue', fmt(db.todayRevenue || 0), (db.todayOrders || 0) + ' orders', 'bg-success/10 text-success', 'payments');
   html += kpiCard('Month Revenue', fmt(db.monthRevenue || 0), (db.monthOrders || 0) + ' orders', 'bg-secondary/10 text-secondary', 'calendar_month');
@@ -200,7 +200,7 @@ async function renderDashboard() {
   html += '</div>';
 
   html += '<div class="grid lg:grid-cols-3 gap-6">';
-  html += '<div class="lg:col-span-2 bg-white border border-outline-variant rounded-xl"><div class="px-5 py-3 border-b border-outline-variant font-bold text-sm text-primary flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-lg">shopping_bag</span>Recent Orders</div><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-[11px] uppercase text-on-surface-variant font-mono"><th class="px-5 py-2">#</th><th class="px-5 py-2">Customer</th><th class="px-5 py-2">Time</th><th class="px-5 py-2">Payment</th><th class="px-5 py-2 text-right">Value</th></tr></thead><tbody>';
+  html += '<div class="lg:col-span-2 bg-white border border-outline-variant rounded-xl"><div class="px-5 py-3 border-b border-outline-variant font-bold text-sm text-primary flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-lg">shopping_bag</span>Recent Orders</div><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs uppercase text-on-surface-variant font-mono font-semibold tracking-wider"><th class="px-5 py-2">#</th><th class="px-5 py-2">Customer</th><th class="px-5 py-2">Time</th><th class="px-5 py-2">Payment</th><th class="px-5 py-2 text-right">Value</th></tr></thead><tbody>';
   if (db.recentOrders && db.recentOrders.length > 0) {
     db.recentOrders.forEach(o => {
       const mc = o.method === 'cash' ? 'bg-success/10 text-success' : (o.method === 'transfer' ? 'bg-secondary/10 text-secondary' : 'bg-pink-100 text-pink-700');
@@ -208,7 +208,7 @@ async function renderDashboard() {
       html += `<tr class="border-t border-outline-variant/50 hover:bg-surface/50"><td class="px-5 py-2 font-mono text-xs font-bold">${o.orderNo || '-'}</td><td class="px-5 py-2">${o.customerName || 'Walk-in'}</td><td class="px-5 py-2 text-xs text-on-surface-variant">${o.date || ''}</td><td class="px-5 py-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${mc}">${ml}</span></td><td class="px-5 py-2 text-right font-bold">${fmt(o.total)}</td></tr>`;
     });
   } else {
-    html += '<tr><td colspan="5" class="px-5 py-8 text-center text-on-surface-variant"><span class="material-symbols-outlined text-3xl opacity-20 mb-2 block mx-auto">receipt_long</span>No orders yet</td></tr>';
+    html += '<tr><td colspan="5" class="px-5 py-6 text-center text-on-surface-variant"><span class="material-symbols-outlined text-3xl opacity-20 mb-2 block mx-auto">receipt_long</span>No orders yet</td></tr>';
   }
   html += '</tbody></table></div></div>';
 
@@ -250,7 +250,7 @@ async function renderPOS() {
   html += '<div class="bg-white border border-outline-variant rounded-xl flex flex-col" style="max-height:calc(100vh - 140px);"><div class="px-4 py-3 border-b border-outline-variant flex justify-between items-center"><h4 class="font-bold text-sm text-primary flex items-center gap-2"><span class="material-symbols-outlined text-secondary">shopping_cart</span>Cart</h4><button class="text-xs text-error font-medium hover:underline" onclick="clearCart()">Clear</button></div>';
   html += '<div class="flex-1 overflow-y-auto p-4" id="cartContainer"><p class="text-sm text-on-surface-variant text-center py-8">Cart is empty</p></div>';
   html += '<div class="border-t border-outline-variant p-4 space-y-3"><div class="flex justify-between text-sm"><span>Subtotal</span><strong id="cartSubtotal">0đ</strong></div><div class="flex justify-between text-sm items-center"><span>Discount</span><input type="number" class="w-20 text-right border border-outline-variant rounded px-2 py-0.5 text-sm" id="cartDiscount" value="0" oninput="updateCartTotal()"></div><div class="flex justify-between text-lg font-extrabold"><span>TOTAL</span><span class="text-error" id="cartTotal">0đ</span></div>';
-  html += '<div class="grid grid-cols-3 gap-2"><button class="payment-btn selected" onclick="selectPayment(\'cash\', this)"><span class="material-symbols-outlined text-lg block mb-0.5">payments</span>Cash</button><button class="payment-btn" onclick="selectPayment(\'transfer\', this)"><span class="material-symbols-outlined text-lg block mb-0.5">account_balance</span>Transfer</button><button class="payment-btn" onclick="selectPayment(\'momo\', this)"><span class="material-symbols-outlined text-lg block mb-0.5">phone_android</span>MoMo</button></div>';
+  html += '<div class="grid grid-cols-3 gap-2"><button class="payment-btn selected" onclick="selectPayment(\'cash\', this)"><span class="material-symbols-outlined text-lg">payments</span>Cash</button><button class="payment-btn" onclick="selectPayment(\'transfer\', this)"><span class="material-symbols-outlined text-lg">account_balance</span>Transfer</button><button class="payment-btn" onclick="selectPayment(\'momo\', this)"><span class="material-symbols-outlined text-lg">phone_android</span>MoMo</button></div>';
   html += '<button class="w-full bg-success text-white py-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-green-600 transition-colors active:scale-[0.98]" onclick="checkout()"><span class="material-symbols-outlined">check_circle</span>Checkout</button></div></div></div>';
 
   document.getElementById('mainContent').innerHTML = html;
@@ -321,7 +321,7 @@ async function renderOrders() {
   let html = topBarHTML('Orders', 'receipt_long', `<input type="date" class="text-sm border border-outline-variant rounded-lg px-3 py-1.5" value="${today}" onchange="renderOrdersByDate(this.value)">`);
   if (orders.length === 0) { html += '<div class="text-center py-12"><span class="material-symbols-outlined text-4xl opacity-20 mb-3 block mx-auto">receipt_long</span><p class="text-on-surface-variant">No orders for this date</p></div>'; }
   else {
-    html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-[11px] uppercase text-on-surface-variant font-mono border-b border-outline-variant"><th class="px-5 py-3">#</th><th class="px-5 py-3">Customer</th><th class="px-5 py-3">Time</th><th class="px-5 py-3">Payment</th><th class="px-5 py-3 text-right">Value</th><th class="px-5 py-3"></th></tr></thead><tbody>';
+    html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs uppercase text-on-surface-variant font-mono font-semibold tracking-wider border-b border-outline-variant"><th class="px-5 py-3">#</th><th class="px-5 py-3">Customer</th><th class="px-5 py-3">Time</th><th class="px-5 py-3">Payment</th><th class="px-5 py-3 text-right">Value</th><th class="px-5 py-3"></th></tr></thead><tbody>';
     orders.forEach(o => {
       const mc = o.paymentMethod === 'cash' ? 'bg-success/10 text-success' : (o.paymentMethod === 'transfer' ? 'bg-secondary/10 text-secondary' : 'bg-pink-100 text-pink-700');
       const ml = o.paymentMethod === 'cash' ? 'Cash' : (o.paymentMethod === 'transfer' ? 'Transfer' : 'MoMo');
@@ -336,7 +336,7 @@ async function renderOrdersByDate(date) {
   const orders = await callGs('getOrders', date) || [];
   const tbody = document.querySelector('table tbody');
   if (!tbody) { renderOrders(); return; }
-  if (orders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-on-surface-variant">No orders for this date</td></tr>'; return; }
+  if (orders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-6 text-center text-on-surface-variant">No orders for this date</td></tr>'; return; }
   tbody.innerHTML = orders.map(o => {
     const mc = o.paymentMethod === 'cash' ? 'bg-success/10 text-success' : (o.paymentMethod === 'transfer' ? 'bg-secondary/10 text-secondary' : 'bg-pink-100 text-pink-700');
     const ml = o.paymentMethod === 'cash' ? 'Cash' : (o.paymentMethod === 'transfer' ? 'Transfer' : 'MoMo');
@@ -349,7 +349,7 @@ async function viewOrderDetail(orderId, orderNo) {
   let itemsHTML = items.length > 0 ? items.map(i => `<tr><td class="py-1.5">${i.productName}</td><td class="py-1.5 text-center">${i.qty}</td><td class="py-1.5 text-right">${fmt(i.price)}</td><td class="py-1.5 text-right font-bold">${fmt(i.total)}</td></tr>`).join('') : '<tr><td colspan="4" class="py-4 text-center text-on-surface-variant">No items found</td></tr>';
   const modal = document.createElement('div');
   modal.id = 'modalContainer';
-  modal.innerHTML = `<div class="fixed inset-0 z-50 flex items-center justify-center"><div class="absolute inset-0 bg-black/40" onclick="closeModal()"></div><div class="relative bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6"><h3 class="font-bold text-lg text-primary mb-4">Order ${orderNo}</h3><table class="w-full text-sm"><thead><tr class="text-left text-[11px] uppercase text-on-surface-variant font-mono border-b"><th>Product</th><th class="text-center">Qty</th><th class="text-right">Price</th><th class="text-right">Total</th></tr></thead><tbody>${itemsHTML}</tbody></table><button class="mt-4 w-full border border-outline-variant text-on-surface-variant py-2 rounded-lg text-sm font-semibold hover:bg-surface transition-colors" onclick="closeModal()">Close</button></div></div>`;
+  modal.innerHTML = `<div class="fixed inset-0 z-50 flex items-center justify-center"><div class="absolute inset-0 bg-black/40" onclick="closeModal()"></div><div class="relative bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6"><h3 class="font-bold text-lg text-primary mb-4">Order ${orderNo}</h3><table class="w-full text-sm"><thead><tr class="text-left text-xs uppercase text-on-surface-variant font-mono font-semibold tracking-wider border-b"><th>Product</th><th class="text-center">Qty</th><th class="text-right">Price</th><th class="text-right">Total</th></tr></thead><tbody>${itemsHTML}</tbody></table><button class="mt-4 w-full border border-outline-variant text-on-surface-variant py-2 rounded-lg text-sm font-semibold hover:bg-surface transition-colors" onclick="closeModal()">Close</button></div></div>`;
   document.body.appendChild(modal);
 }
 
@@ -359,7 +359,7 @@ function closeModal() { const el = document.getElementById('modalContainer'); if
 async function renderProducts() {
   const products = await callGs('getProducts') || APP.products || [];
   let html = topBarHTML('Products', 'inventory_2', `<span class="text-sm text-on-surface-variant font-mono">(${products.length})</span><input class="text-sm border border-outline-variant rounded-lg px-3 py-1.5 ml-2" id="prodSearch" placeholder="Search..." oninput="renderProductsFiltered()"><button class="bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-secondary transition-colors ml-2" onclick="showProductForm()">+ Add</button>`);
-  html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-[11px] uppercase text-on-surface-variant font-mono border-b border-outline-variant"><th class="px-5 py-3">Name</th><th class="px-5 py-3">SKU</th><th class="px-5 py-3">Category</th><th class="px-5 py-3 text-right">Purchase</th><th class="px-5 py-3 text-right">Selling</th><th class="px-5 py-3 text-center">Stock</th><th class="px-5 py-3"></th></tr></thead><tbody id="prodTableBody">';
+  html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs uppercase text-on-surface-variant font-mono font-semibold tracking-wider border-b border-outline-variant"><th class="px-5 py-3">Name</th><th class="px-5 py-3">SKU</th><th class="px-5 py-3">Category</th><th class="px-5 py-3 text-right">Purchase</th><th class="px-5 py-3 text-right">Selling</th><th class="px-5 py-3 text-center">Stock</th><th class="px-5 py-3"></th></tr></thead><tbody id="prodTableBody">';
   products.forEach(p => {
     html += `<tr class="border-b border-outline-variant/30 hover:bg-surface/50"><td class="px-5 py-2.5 font-semibold">${p.name}</td><td class="px-5 py-2.5 text-xs font-mono">${p.sku || '-'}</td><td class="px-5 py-2.5 text-xs">${p.category || '-'}</td><td class="px-5 py-2.5 text-right text-xs">${fmt(p.purchasePrice)}</td><td class="px-5 py-2.5 text-right text-error font-bold">${fmt(p.sellingPrice)}</td><td class="px-5 py-2.5 text-center ${p.stock <= 5 ? 'text-warning font-bold' : ''}">${p.stock} ${p.unit || ''}</td><td class="px-5 py-2.5"><button class="text-secondary hover:underline text-xs mr-2" onclick="showProductForm('${p.id}')"><span class="material-symbols-outlined text-sm align-middle">edit</span></button><button class="text-error/60 hover:text-error text-xs" onclick="deleteProduct('${p.id}')"><span class="material-symbols-outlined text-sm align-middle">delete</span></button></td></tr>`;
   });
@@ -380,7 +380,9 @@ function showProductForm(id) {
   const p = id ? (APP._prodCache || []).find(x => x.id === id) || {} : {};
   const modal = document.createElement('div');
   modal.id = 'modalContainer';
-  modal.innerHTML = `<div class="fixed inset-0 z-50 flex items-center justify-center"><div class="absolute inset-0 bg-black/40" onclick="closeModal()"></div><div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6"><h3 class="font-bold text-lg text-primary mb-4">${id ? 'Edit Product' : 'Add Product'}</h3><input type="hidden" id="prodId" value="${p.id || ''}"><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Name *</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="prodName" value="${p.name || ''}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">SKU</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="prodSku" value="${p.sku || ''}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Category</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="prodCat" value="${p.category || ''}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Unit</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="prodUnit" value="${p.unit || 'cái'}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Purchase Price</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" type="number" id="prodPurchase" value="${p.purchasePrice || 0}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Selling Price *</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" type="number" id="prodSelling" value="${p.sellingPrice || 0}"></div></div><div class="flex gap-3 mt-5"><button class="flex-1 border border-outline-variant text-on-surface-variant py-2 rounded-lg text-sm font-semibold hover:bg-surface" onclick="closeModal()">Cancel</button><button class="flex-1 bg-primary text-white py-2 rounded-lg text-sm font-semibold hover:bg-secondary" onclick="saveProduct()">${id ? 'Update' : 'Add'} Product</button></div></div></div>`;
+  const stock = p.stock || 0; const unit = p.unit || 'cái';
+  const stockInfo = id ? `<div class="mt-4 p-3 bg-surface rounded-lg border border-outline-variant flex items-center justify-between"><div><span class="text-xs text-on-surface-variant uppercase font-semibold">Current Stock:</span><span class="text-sm font-bold text-primary ml-2">${stock} ${unit}</span><span class="text-[11px] text-on-surface-variant ml-2">(read-only)</span></div><button class="text-secondary text-xs font-semibold hover:underline whitespace-nowrap flex items-center gap-1" onclick="closeModal(); navigate('stockin');"><span class="material-symbols-outlined text-sm">add_circle</span>Quick Stock In</button></div>` : '';
+  modal.innerHTML = `<div class="fixed inset-0 z-50 flex items-center justify-center"><div class="absolute inset-0 bg-black/40" onclick="closeModal()"></div><div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6"><h3 class="font-bold text-lg text-primary mb-4">${id ? 'Edit Product' : 'Add Product'}</h3><input type="hidden" id="prodId" value="${p.id || ''}"><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Name *</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="prodName" value="${p.name || ''}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">SKU</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="prodSku" value="${p.sku || ''}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Category</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="prodCat" value="${p.category || ''}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Unit</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="prodUnit" value="${unit}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Purchase Price</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" type="number" id="prodPurchase" value="${p.purchasePrice || 0}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Selling Price *</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" type="number" id="prodSelling" value="${p.sellingPrice || 0}"></div></div>${stockInfo}<div class="flex gap-3 mt-5"><button class="flex-1 border border-outline-variant text-on-surface-variant py-2 rounded-lg text-sm font-semibold hover:bg-surface" onclick="closeModal()">Cancel</button><button class="flex-1 bg-primary text-white py-2 rounded-lg text-sm font-semibold hover:bg-secondary" onclick="saveProduct()">${id ? 'Update' : 'Add'} Product</button></div></div></div>`;
   document.body.appendChild(modal);
 }
 
@@ -400,8 +402,8 @@ async function renderStockIn() {
   const history = await callGs('getStockInHistory') || [];
   let html = topBarHTML('Stock In', 'local_shipping');
   html += '<div class="bg-white border border-outline-variant rounded-xl p-5 mb-6"><h4 class="font-bold text-sm text-primary mb-4">New Stock In</h4><div id="stockItems"></div><button class="text-secondary text-sm font-semibold hover:underline mt-2" onclick="addStockRow()">+ Add Row</button><div class="grid grid-cols-2 gap-3 mt-4"><input class="border border-outline-variant rounded-lg px-3 py-2 text-sm" id="stockSupplier" placeholder="Supplier (optional)"><input class="border border-outline-variant rounded-lg px-3 py-2 text-sm" id="stockNote" placeholder="Note (optional)"></div><button class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-secondary transition-colors mt-4" onclick="doStockIn()">Confirm Stock In</button></div>';
-  html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><div class="px-5 py-3 border-b border-outline-variant font-bold text-sm text-primary">History</div><table class="w-full text-sm"><thead><tr class="text-left text-[11px] uppercase text-on-surface-variant font-mono"><th class="px-5 py-2">Time</th><th class="px-5 py-2">Product</th><th class="px-5 py-2 text-center">Qty</th><th class="px-5 py-2 text-right">Price</th><th class="px-5 py-2 text-right">Total</th><th class="px-5 py-2">Supplier</th></tr></thead><tbody>';
-  if (history.length === 0) { html += '<tr><td colspan="6" class="px-5 py-8 text-center text-on-surface-variant">No stock-in history</td></tr>'; }
+  html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><div class="px-5 py-3 border-b border-outline-variant font-bold text-sm text-primary">History</div><table class="w-full text-sm"><thead><tr class="text-left text-xs uppercase text-on-surface-variant font-mono font-semibold tracking-wider"><th class="px-5 py-2">Time</th><th class="px-5 py-2">Product</th><th class="px-5 py-2 text-center">Qty</th><th class="px-5 py-2 text-right">Price</th><th class="px-5 py-2 text-right">Total</th><th class="px-5 py-2">Supplier</th></tr></thead><tbody>';
+  if (history.length === 0) { html += '<tr><td colspan="6" class="px-5 py-6 text-center text-on-surface-variant">No stock-in history</td></tr>'; }
   else { history.forEach(h => { html += `<tr class="border-t border-outline-variant/30"><td class="px-5 py-2 text-xs">${fmtDate(h.date)}</td><td class="px-5 py-2 font-semibold">${h.productName}</td><td class="px-5 py-2 text-center">${h.qty}</td><td class="px-5 py-2 text-right text-xs">${fmt(h.purchasePrice)}</td><td class="px-5 py-2 text-right font-bold">${fmt(h.total)}</td><td class="px-5 py-2 text-xs">${h.supplier || '-'}</td></tr>`; }); }
   html += '</tbody></table></div>';
   document.getElementById('mainContent').innerHTML = html;
@@ -437,8 +439,8 @@ async function doStockIn() {
 async function renderExpenses() {
   const expenses = await callGs('getExpenses') || [];
   let html = topBarHTML('Expenses', 'payments', '<button class="bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-secondary transition-colors" onclick="showExpenseForm()">+ Add</button>');
-  html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-[11px] uppercase text-on-surface-variant font-mono border-b"><th class="px-5 py-3">Date</th><th class="px-5 py-3">Category</th><th class="px-5 py-3 text-right">Amount</th><th class="px-5 py-3">Note</th></tr></thead><tbody>';
-  if (expenses.length === 0) { html += '<tr><td colspan="4" class="px-5 py-8 text-center text-on-surface-variant">No expenses</td></tr>'; }
+  html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs uppercase text-on-surface-variant font-mono font-semibold tracking-wider border-b"><th class="px-5 py-3">Date</th><th class="px-5 py-3">Category</th><th class="px-5 py-3 text-right">Amount</th><th class="px-5 py-3">Note</th></tr></thead><tbody>';
+  if (expenses.length === 0) { html += '<tr><td colspan="4" class="px-5 py-6 text-center text-on-surface-variant">No expenses</td></tr>'; }
   else { expenses.forEach(e => { html += `<tr class="border-b border-outline-variant/30"><td class="px-5 py-2.5 text-xs">${fmtDate(e.date)}</td><td class="px-5 py-2.5 font-semibold">${e.category}</td><td class="px-5 py-2.5 text-right text-error font-bold">${fmt(e.amount)}</td><td class="px-5 py-2.5 text-xs">${e.note || '-'}</td></tr>`; }); }
   html += '</tbody></table></div>';
   document.getElementById('mainContent').innerHTML = html;
@@ -459,8 +461,8 @@ async function saveExpense() {
 async function renderCustomers() {
   const customers = await callGs('getCustomers') || [];
   let html = topBarHTML('Customers', 'people', `<span class="text-sm text-on-surface-variant font-mono">(${customers.length})</span><button class="bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-secondary transition-colors ml-2" onclick="showCustomerForm()">+ Add</button>`);
-  html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-[11px] uppercase text-on-surface-variant font-mono border-b"><th class="px-5 py-3">Name</th><th class="px-5 py-3">Phone</th><th class="px-5 py-3">Address</th><th class="px-5 py-3">Added</th></tr></thead><tbody>';
-  if (customers.length === 0) { html += '<tr><td colspan="4" class="px-5 py-8 text-center text-on-surface-variant">No customers</td></tr>'; }
+  html += '<div class="bg-white border border-outline-variant rounded-xl overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs uppercase text-on-surface-variant font-mono font-semibold tracking-wider border-b"><th class="px-5 py-3">Name</th><th class="px-5 py-3">Phone</th><th class="px-5 py-3">Address</th><th class="px-5 py-3">Added</th></tr></thead><tbody>';
+  if (customers.length === 0) { html += '<tr><td colspan="4" class="px-5 py-6 text-center text-on-surface-variant">No customers</td></tr>'; }
   else { customers.forEach(c => { html += `<tr class="border-b border-outline-variant/30"><td class="px-5 py-2.5 font-semibold">${c.name}</td><td class="px-5 py-2.5 text-xs">${c.phone || '-'}</td><td class="px-5 py-2.5 text-xs">${c.address || '-'}</td><td class="px-5 py-2.5 text-xs">${fmtDate(c.createdAt)}</td></tr>`; }); }
   html += '</tbody></table></div>';
   document.getElementById('mainContent').innerHTML = html;
@@ -486,7 +488,13 @@ async function renderReports() {
   html += kpiCard('Total Orders', String(data.totalOrders || 0), '', 'bg-secondary/10 text-secondary', 'shopping_bag');
   html += kpiCard('Avg / Order', fmt(data.avgOrderValue || 0), '', 'bg-blue-500/10 text-blue-500', 'calculate');
   html += kpiCard('Cash Payments', fmt((data.byPayment || {}).cash || 0), '', 'bg-warning/10 text-warning', 'payments');
-  html += '</div><div class="bg-white border border-outline-variant rounded-xl p-5"><h4 class="font-bold text-sm text-primary mb-4">Revenue by Day</h4><div style="height:280px;"><canvas id="salesChart"></canvas></div></div>';
+  html += '</div><div class="bg-white border border-outline-variant rounded-xl p-5"><h4 class="font-bold text-sm text-primary mb-4">Revenue by Day</h4>';
+  if (data.dailySales) {
+    html += '<div style="height:280px;"><canvas id="salesChart"></canvas></div>';
+  } else {
+    html += '<div style="height:280px;" class="flex items-center justify-center"><div class="text-center"><span class="material-symbols-outlined text-4xl opacity-20 mb-2">bar_chart</span><p class="text-sm text-on-surface-variant">No sales data yet</p></div></div>';
+  }
+  html += '</div>';
   document.getElementById('mainContent').innerHTML = html;
   if (data.dailySales) {
     const labels = Object.keys(data.dailySales).sort();
@@ -504,8 +512,8 @@ async function renderReports() {
 async function renderSettings() {
   const settings = await callGs('getSettings') || {};
   let html = topBarHTML('Settings', 'settings');
-  html += `<div class="max-w-lg"><div class="bg-white border border-outline-variant rounded-xl p-6 space-y-4"><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Store Name</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="setName" value="${settings.storeName || 'MiniPOS'}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Phone</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="setPhone" value="${settings.storePhone || ''}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Address</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="setAddr" value="${settings.storeAddress || ''}"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Low Stock Alert</label><input class="w-24 border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" type="number" id="setLowStock" value="${settings.lowStockAlert || '5'}"></div><button class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-secondary transition-colors" onclick="saveSettings()">Save Settings</button></div>`;
-  html += `<div class="bg-white border border-outline-variant rounded-xl p-6 mt-6"><h4 class="font-bold text-sm text-primary mb-2">Demo Data</h4><p class="text-xs text-on-surface-variant mb-3">Generate 15 sample products and 7 days of order data for testing.</p><button class="border border-warning text-warning px-4 py-2 rounded-lg text-sm font-semibold hover:bg-warning/5 transition-colors" onclick="setupDemo()">Generate Demo Data</button></div></div>`;
+  html += '<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start"><div class="lg:col-span-2 bg-white border border-outline-variant rounded-xl p-6 space-y-4"><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Store Name</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="setName" value="' + (settings.storeName || 'MiniPOS') + '"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Phone</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="setPhone" value="' + (settings.storePhone || '') + '"></div><div><label class="text-xs font-semibold text-on-surface-variant uppercase">Address</label><input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm mt-1" id="setAddr" value="' + (settings.storeAddress || '') + '"></div><div class="flex items-center justify-between"><label class="text-xs font-semibold text-on-surface-variant uppercase">Low Stock Alert</label><input class="w-24 border border-outline-variant rounded-lg px-3 py-2 text-sm" type="number" id="setLowStock" value="' + (settings.lowStockAlert || '5') + '"></div><div class="pt-4 border-t border-outline-variant flex justify-end"><button class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-secondary transition-colors" onclick="saveSettings()">Save Settings</button></div></div>';
+  html += '<div class="bg-white border border-outline-variant rounded-xl p-6"><h4 class="font-bold text-sm text-primary mb-2">Demo Data</h4><p class="text-xs text-on-surface-variant mb-3">Generate 15 sample products and 7 days of order data for testing.</p><button class="w-full border border-warning text-warning px-4 py-2 rounded-lg text-sm font-semibold hover:bg-warning/5 transition-colors" onclick="setupDemo()">Generate Demo Data</button></div></div>';
   document.getElementById('mainContent').innerHTML = html;
 }
 async function saveSettings() {
@@ -523,15 +531,32 @@ async function setupDemo() {
 
 // ======================== INIT ========================
 window.addEventListener('load', () => {
-  // Ensure Material Symbols font is loaded before rendering
-  document.fonts.load('24px Material Symbols Outlined').then(() => {
-    navigate('dashboard');
+  // 1. Initialize all Google Sheets first
+  callGs('initSheets').then(() => {
+    // 2. Ensure Material Symbols font is loaded before rendering
+    document.fonts.load('24px Material Symbols Outlined').then(() => {
+      navigate('dashboard');
+    }).catch(() => {
+      navigate('dashboard');
+    });
   }).catch(() => {
-    navigate('dashboard'); // fallback if font fails
+    // Fallback: still render even if initSheets fails
+    document.fonts.load('24px Material Symbols Outlined').then(() => {
+      navigate('dashboard');
+    }).catch(() => {
+      navigate('dashboard');
+    });
   });
 });
 </script>
 <style>
+html { background-color: #f9f9f9; }
+.main-content { overflow-x: hidden; }
+/* Full-width layout — ensure content fills entire remaining space */
+#appShell { width: 100%; max-width: 100%; }
+#mainContent { width: 100%; max-width: 100%; }
+#mainContent > .grid { width: 100%; }
+.kpi-card { width: 100%; box-sizing: border-box; }
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
@@ -591,9 +616,11 @@ window.addEventListener('load', () => {
 }
 .btn-qty:hover { background: #f1f5f9; }
 .payment-btn {
-  padding: 10px 6px; border: 2px solid #e2e8f0; border-radius: 10px;
-  background: white; cursor: pointer; text-align: center;
-  font-weight: 600; font-size: 0.8rem; transition: all 0.15s;
+  padding: 12px 6px; border: 2px solid #e2e8f0; border-radius: 10px;
+  background: white; cursor: pointer;
+  font-weight: 600; font-size: 0.72rem; transition: all 0.15s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; white-space: nowrap;
 }
 .payment-btn:hover { border-color: #005eb2; }
 .payment-btn.selected { border-color: #005eb2; background: #eff6ff; color: #005eb2; }

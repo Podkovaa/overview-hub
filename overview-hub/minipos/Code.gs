@@ -79,6 +79,11 @@ function login(email, password) {
 
 // === SẢN PHẨM =================================================
 
+/**
+ * Lấy danh sách tất cả sản phẩm đang active.
+ * @param {string} [search] - Từ khóa tìm kiếm (tên, SKU, hoặc barcode).
+ * @return {Object[]} Danh sách sản phẩm.
+ */
 function getProducts(search) {
   var data = getSheet_('Products').getDataRange().getValues();
   var products = [];
@@ -96,6 +101,11 @@ function getProducts(search) {
   return products;
 }
 
+/**
+ * Tìm sản phẩm theo mã barcode.
+ * @param {string} barcode - Mã vạch cần tìm.
+ * @return {Object|null} Sản phẩm tìm thấy hoặc null.
+ */
 function findByBarcode(barcode) {
   var data = getSheet_('Products').getDataRange().getValues();
   for (var i = 1; i < data.length; i++) {
@@ -109,7 +119,11 @@ function findByBarcode(barcode) {
   return null;
 }
 
-// Nhận barcode từ scanner (doPost từ Netlify)
+/**
+ * Nhận barcode từ scanner (gọi qua HTTP POST).
+ * @param {Object} e - Event object chứa postData với barcode.
+ * @return {ContentService.Content} JSON response.
+ */
 function doPost(e) {
   try {
     var payload = JSON.parse(e.postData.contents);
@@ -127,6 +141,11 @@ function doPost(e) {
   }
 }
 
+/**
+ * Thêm sản phẩm mới vào kho.
+ * @param {Object} product - Thông tin sản phẩm {name, sku, category, purchasePrice, sellingPrice, unit, barcode}.
+ * @return {Object} Kết quả {success, id}.
+ */
 function addProduct(product) {
   var sheet = getSheet_('Products');
   var id = generateId_();
@@ -138,6 +157,12 @@ function addProduct(product) {
   return { success: true, id: id };
 }
 
+/**
+ * Cập nhật thông tin sản phẩm.
+ * @param {string} id - ID sản phẩm cần cập nhật.
+ * @param {Object} product - Thông tin mới {name, sku, category, purchasePrice, sellingPrice, unit, barcode}.
+ * @return {Object} Kết quả {success}.
+ */
 function updateProduct(id, product) {
   var sheet = getSheet_('Products');
   var data = sheet.getDataRange().getValues();
@@ -157,6 +182,11 @@ function updateProduct(id, product) {
   return { success: false, message: 'Không tìm thấy sản phẩm' };
 }
 
+/**
+ * Xóa mềm sản phẩm (set active = false).
+ * @param {string} id - ID sản phẩm cần xóa.
+ * @return {Object} Kết quả {success}.
+ */
 function deleteProduct(id) {
   var sheet = getSheet_('Products');
   var data = sheet.getDataRange().getValues();
@@ -171,6 +201,11 @@ function deleteProduct(id) {
 
 // === ĐƠN HÀNG =================================================
 
+/**
+ * Tạo đơn hàng mới, lưu vào Orders + OrderItems, tự động trừ kho.
+ * @param {Object} orderData - Dữ liệu đơn hàng {customerName, items, subtotal, discount, total, paymentMethod}.
+ * @return {Object} Kết quả {success, orderNo, orderId}.
+ */
 function createOrder(orderData) {
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
@@ -227,6 +262,11 @@ function addStock_(productId, qty) {
   }
 }
 
+/**
+ * Lấy danh sách đơn hàng, có thể lọc theo ngày.
+ * @param {string} [dateFilter] - Ngày cần lọc (định dạng yyyy-MM-dd).
+ * @return {Object[]} Danh sách đơn hàng.
+ */
 function getOrders(dateFilter) {
   var data = getSheet_('Orders').getDataRange().getValues();
   var orders = [];
@@ -255,6 +295,11 @@ function getOrderDetail(orderId) {
 
 // === NHẬP KHO ==================================================
 
+/**
+ * Nhập kho - tăng stock sản phẩm và lưu lịch sử nhập.
+ * @param {Object} stockData - Dữ liệu nhập kho {items: [{productId, productName, qty, purchasePrice}], supplier, note}.
+ * @return {Object} Kết quả {success}.
+ */
 function stockIn(stockData) {
   for (var i = 0; i < stockData.items.length; i++) {
     var item = stockData.items[i];
@@ -330,6 +375,10 @@ function addCustomer(customer) {
 
 // === DASHBOARD =================================================
 
+/**
+ * Tính toán dữ liệu tổng quan cho Dashboard (doanh thu, lợi nhuận, đơn hàng, tồn kho thấp).
+ * @return {Object} Dữ liệu dashboard {todayRevenue, monthRevenue, todayProfit, monthProfit, totalProducts, lowStock, recentOrders}.
+ */
 function getDashboardData() {
   var today = Utilities.formatDate(new Date(), 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd');
   var month = today.substring(0, 7);
@@ -402,6 +451,12 @@ function getDashboardData() {
   };
 }
 
+/**
+ * Tạo báo cáo doanh thu theo ngày, dùng cho biểu đồ trang Reports.
+ * @param {string} [startDate] - Ngày bắt đầu (yyyy-MM-dd).
+ * @param {string} [endDate] - Ngày kết thúc (yyyy-MM-dd).
+ * @return {Object} Báo cáo {totalRevenue, totalOrders, avgOrderValue, dailySales, byPayment}.
+ */
 function getSalesReport(startDate, endDate) {
   var ordersData = getSheet_('Orders').getDataRange().getValues();
   var dailySales = {};
@@ -452,6 +507,20 @@ function updateSettings(settings) {
   return { success: true };
 }
 
+// === KHỞI TẠO SHEETS ==========================================
+
+function initSheets() {
+  getSheet_('Products');
+  getSheet_('Orders');
+  getSheet_('OrderItems');
+  getSheet_('StockIn');
+  getSheet_('Expenses');
+  getSheet_('Customers');
+  getSheet_('Users');
+  getSheet_('Settings');
+  return { success: true };
+}
+
 // === WEB APP ENTRY POINT =====================================
 
 function doGet() {
@@ -464,6 +533,10 @@ function doGet() {
 
 // === KHỞI TẠO DỮ LIỆU MẪU ====================================
 
+/**
+ * Sinh dữ liệu mẫu: 15 sản phẩm + đơn hàng 7 ngày để test app.
+ * @return {Object} Kết quả {success, message}.
+ */
 function setupDemoData() {
   var products = [
     ['Sting dâu 330ml', 'STING330', 'Nước giải khát', 6000, 10000, 100, 'lon', '8934588000010', ''],
